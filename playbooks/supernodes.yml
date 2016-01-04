@@ -6,3 +6,4 @@
     - ffe.tunnels
     - ffe.peerings
     - ffe.iptables
+    - ffe.openvpn
