@@ -1,15 +1,15 @@
 #!/bin/sh
-ip rule add from 10.228.0.0/24 table main
-ip rule add to 10.228.0.0/24 table main
+ip rule add from 10.228.0.0/24 lookup main
+ip rule add to 10.228.0.0/24 lookup main
 
 {% for site in sites %}
 {% for prefix in  site.prefixes %}
-ip route add {{prefix.ipv4}} via {{ openvpn.ipv4.server_net | ipaddr('net') | ipaddr('1') | ipaddr ('address') }} table 42
+ip route add {{prefix.ipv4}} dev tun0 table 42
 {% endfor %}
 {% endfor %}
 
 {% for site in sites %}
 {% for prefix in  site.prefixes %}
-ip -6 route add {{prefix.ipv6}} via {{ openvpn.ipv6.server_net | ipaddr('net') | ipaddr('1') | ipaddr ('address') }} table 42
+ip -6 route add {{prefix.ipv6}} dev tun0 table 42
 {% endfor %}
 {% endfor %}
