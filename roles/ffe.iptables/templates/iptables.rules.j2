@@ -1,0 +1,29 @@
+*filter
+:INPUT ACCEPT [384919558:324473666993]
+:FORWARD ACCEPT [302056066:288614493772]
+:OUTPUT ACCEPT [799077077:380640909330]
+
+-A INPUT -s 10.0.0.0/8 -p udp -m udp --dport 10000 -m limit --limit 2/sec -j LOG --log-prefix "fastd over mesh: "
+-A INPUT -s 10.0.0.0/8 -p udp -m udp --dport 10000 -j REJECT --reject-with icmp-admin-prohibited
+-A FORWARD -s 10.0.0.0/8 -p udp -m udp --dport 10000 -m limit --limit 2/sec -j LOG --log-prefix "fastd over mesh: "
+-A FORWARD -s 10.0.0.0/8 -p udp -m udp --dport 10000 -j REJECT --reject-with icmp-admin-prohibited
+
+# mss clamping
+-A FORWARD -o t-+ -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1280
+
+# drop invalid
+-A FORWARD -m state --state INVALID -j DROP
+
+COMMIT
+
+*nat
+:PREROUTING ACCEPT [2604251:186110873]
+:INPUT ACCEPT [825577:59133072]
+:OUTPUT ACCEPT [139384:11006472]
+:POSTROUTING ACCEPT [138887:10983100]
+
+{% if nat_ip is defined %}
+-A POSTROUTING -o t-+ -j SNAT --to-source {{nat_ip}}
+{% endif %}
+
+COMMIT
