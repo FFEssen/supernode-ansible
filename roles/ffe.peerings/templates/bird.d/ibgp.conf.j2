@@ -10,7 +10,11 @@ template bgp ibgp {
 {% for peer in ibgp.peers %}
 {% if peer.ipv4 is defined %}
 protocol bgp {{peer.name}} from ibgp {
+{% if ibgp.default_source.ipv4 is defined %}
+    source address {{ibgp.default_source.ipv4}};
+{% else %}
     source address {{peer.ipv4.source}};
+{% endif %}
     neighbor {{peer.ipv4.neighbor}} as {{own_as}};
     default bgp_med 3;
 };
@@ -27,12 +31,12 @@ template bgp ibgp_site {
     multihop 64;
 };
 
-{% if ibgp.sites is defined %}
-{% for site in ibgp.sites %}
-{% if site.ipv4 is defined %}
-protocol bgp {{site.name}} from ibgp_site {
-    source address {{site.ipv4.source}};
-    neighbor {{site.ipv4.neighbor}} as {{own_as}};
+{% if openvpn is defined and sites is defined %}
+{% for site in sites %}
+{% if site.bgp is defined %}
+protocol bgp {{site.bgp.name}} from ibgp_site {
+    source address {{ openvpn.ipv4.server_net | ipaddr('net') | ipaddr('1') | ipaddr('address') }};
+    neighbor {{ openvpn.ipv4.server_net | ipaddr('net') | ipaddr(site.id) | ipaddr('address') }} as {{own_as}};
     default bgp_med 3;
 };
 
