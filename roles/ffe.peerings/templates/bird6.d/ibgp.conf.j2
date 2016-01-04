@@ -1,0 +1,43 @@
+template bgp ibgp {
+    local as {{own_as}};
+    import all;
+    export filter only_default;
+    next hop self;
+    direct;
+    gateway direct;
+};
+
+{% if ibgp.peers is defined %}
+{% for peer in ibgp.peers %}
+{% if peer.ipv6 is defined %}
+protocol bgp {{peer.name}} from ibgp {
+    source address {{peer.ipv6.source}};
+    neighbor {{peer.ipv6.neighbor}} as {{own_as}};
+    default bgp_med 3;
+};
+
+{% endif %}
+{% endfor %}
+{% endif %}
+
+template bgp ibgp_site {
+    local as {{own_as}};
+    import all;
+    export filter only_default;
+    next hop self;
+    direct;
+    gateway direct;
+};
+
+{% if ibgp.sites is defined %}
+{% for site in ibgp.sites %}
+{% if site.ipv6 is defined %}
+protocol bgp {{site.name}} from ibgp_site {
+    source address {{site.ipv6.source}};
+    neighbor {{site.ipv6.neighbor}} as {{own_as}};
+    default bgp_med 3;
+};
+
+{% endif %}
+{% endfor %}
+{% endif %}

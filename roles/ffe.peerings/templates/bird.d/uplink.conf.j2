@@ -1,0 +1,20 @@
+template bgp uplink {
+    local as {{own_as}};
+    import filter only_default;
+    export filter hostroute;
+    next hop self;
+    multihop 64;
+};
+
+{% if uplink.peers is defined %}
+{% for peer in uplink.peers %}
+{% if peer.ipv4 is defined %}
+protocol bgp {{peer.name}} from uplink {
+    source address {{peer.ipv4.source}};
+    neighbor {{peer.ipv4.neighbor}} as {{peer.as}};
+    default bgp_med 2;
+};
+
+{% endif %}
+{% endfor %}
+{% endif %}

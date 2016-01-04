@@ -1,0 +1,19 @@
+filter hostroute {
+    if net ~ {{nat_ip}}/32 then accept;
+    reject;
+};
+
+filter except_default {
+    if net = 0.0.0.0/0 then reject;
+    accept;
+};
+
+filter only_default {
+    if net = 0.0.0.0/0 then accept;
+    reject;
+};
+
+filter ibgp_site_import {
+    if net ~ {{site_prefix}} then accept;
+    reject;
+};

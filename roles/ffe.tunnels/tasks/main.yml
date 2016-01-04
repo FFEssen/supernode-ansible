@@ -1,0 +1,13 @@
+---
+- name: Configure GRE tunnels
+  template:
+    dest: "/etc/network/interfaces.d/tunnels"
+    src: tunnels.j2
+    owner: root
+    mode: 0644
+
+- name: Enabling interfaces
+  command: /sbin/ifup {{ item.name }}
+  with_items: tunnels
+  register: ifup_result
+  changed_when: "'already configured' in ifup_result.stdout"

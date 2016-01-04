@@ -1,0 +1,20 @@
+log syslog all;
+router id {{router_id}};
+timeformat protocol "%s";
+
+protocol direct {
+    interface "*";
+};
+
+protocol kernel {
+    device routes;
+    import all;
+    export all;
+    kernel table 42;
+};
+
+protocol device {
+    scan time 8;
+};
+
+include "/etc/bird/bird.d/*.conf";

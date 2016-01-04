@@ -1,0 +1,13 @@
+filter hostroute {
+{% if ipv6.prefixes is defined %}
+{% for item in ipv6.prefixes %}
+    if net = {{item.prefix}} then accept;
+{% endfor %}
+{% endif %}
+    reject;
+};
+
+filter only_default {
+    if net = ::/0 then accept;
+    reject;
+};

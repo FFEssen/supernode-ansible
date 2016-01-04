@@ -1,0 +1,16 @@
+{% if tunnels is defined %}
+{% for tunnel in tunnels %}
+
+auto {{tunnel.name}}
+iface {{tunnel.name}} inet static
+    address {{tunnel.ipv4.address}}
+    netmask 255.255.255.254
+    mtu 1476
+    pre-up modprobe ip_gre
+    pre-up ip tunnel add {{tunnel.name}} mode gre local {{host_ip}} remote {{tunnel.ipv4.remote}} ttl 64 dev eth0
+{% if tunnel.ipv6 is defined %}
+    post-up ip -6 addr add {{tunnel.ipv6.address}}/64 dev {{tunnel.name}}
+{% endif %}
+
+{% endfor %}
+{% endif %}
