@@ -3,19 +3,23 @@
   apt: name=openvpn state=present update_cache=yes
 
 - name: Ensure openvpn config dir exists
-  file: name={{openvpn_config_dir}} state=directory owner=root mode=0700
+  file: name={{openvpn_config_dir}} state=directory owner=root mode=0755
 
-- name: Ensure config subdirs exists
-  file: name={{openvpn_config_dir}} state=directory owner=root mode=0700
-  with_items:
-    - keys
-    - ccd
+- name: Ensure keys dir exists
+  file: name={{openvpn_config_dir}}/keys state=directory owner=root mode=0700
+
+- name: Ensure ccd dir exists
+  file: name={{openvpn_config_dir}}/ccd state=directory owner=root mode=0755
 
 - name: Creating up script
-  template: src=on_up.sh.j2 dest={{openvpn_config_dir}}/on_up.sh owner=root mode=0700
+  template: src=on_up.sh.j2 dest={{openvpn_config_dir}}/on_up.sh owner=root mode=0755
 
 - name: Copy down script
-  copy: src=on_down.sh dest={{openvpn_config_dir}}/on_down.sh owner=root mode=0700
+  copy: src=on_down.sh dest={{openvpn_config_dir}}/on_down.sh owner=root mode=0755
+
+- name: Creating ccd files
+  template: src=ccd.j2 dest={{openvpn_config_dir}}/ccd/{{item.name}} owner=root mode=0444
+  with_items: sites
 
 - name: Configure openvpn server
   template: src=server.conf.j2 dest={{openvpn_config_dir}}/server.conf owner=root mode=0600
