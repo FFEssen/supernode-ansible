@@ -1,0 +1,22 @@
+---
+- name: Ensure openvpn is installed
+  apt: name=openvpn state=present update_cache=yes
+
+- name: Ensure openvpn config dir exists
+  file: name={{openvpn_config_dir}} state=directory owner=root mode=0700
+
+- name: Ensure config subdirs exists
+  file: name={{openvpn_config_dir}} state=directory owner=root mode=0700
+  with_items:
+    - keys
+    - ccd
+
+- name: Creating up script
+  template: src=on_up.sh.j2 dest={{openvpn_config_dir}}/on_up.sh owner=root mode=0700
+
+- name: Copy down script
+  copy: src=on_down.sh dest={{openvpn_config_dir}}/on_down.sh owner=root mode=0700
+
+- name: Configure openvpn server
+  template: src=server.conf.j2 dest={{openvpn_config_dir}}/server.conf owner=root mode=0600
+  notify: Restart openvpn

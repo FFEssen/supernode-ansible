@@ -1,0 +1,47 @@
+{% set server_address = openvpn.ipv4.server_net | ipaddr('net') | ipaddr('1') | ipaddr('address') %}
+{% set server_address_ipv6 = openvpn.ipv6.server_net | ipaddr('net') | ipaddr('1') | ipaddr('address') %}
+proto udp6
+dev tun0
+tun-ipv6
+
+mode server
+tls-server
+keepalive 10 120
+comp-lzo
+
+cipher none
+auth SHA384
+tls-auth keys/ta.key 0
+tls-cipher DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-CAMELLIA256-SHA:DHE-RSA-AES256-SHA:DHE-RSA-CAMELLIA128-SHA:DHE-RSA-AES128-SHA:CAMELLIA256-SHA:AES256-SHA:CAMELLIA128-SHA:AES128-SHA
+
+ca keys/ca.crt
+cert keys/server.crt
+key keys/server.key
+dh keys/dh2048.pem
+
+ifconfig {{server_address}} 255.255.255.0
+ifconfig-ipv6 {{server_address_ipv6}}/64 {{server_address_ipv6}}
+
+route-ipv6 ::
+route-gateway {{server_address}}
+
+topology subnet
+
+push "tun-ipv6"
+push "topology subnet"
+push "route-gateway {{server_address}} 255.255.255.0"
+
+client-config-dir ccd
+
+user nobody
+group nogroup
+
+persist-key
+persist-tun
+
+log-append /var/log/openvpn.log
+verb 3
+
+script-security 2
+up on_up.sh
+down on_down.sh
