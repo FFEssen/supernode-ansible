@@ -3,6 +3,7 @@
   become: yes
   become_method: sudo
   roles:
+    - ffe.packages
     - ffe.tunnels
     - ffe.peerings
     - ffe.iptables

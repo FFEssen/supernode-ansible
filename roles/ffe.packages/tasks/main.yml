@@ -1,0 +1,15 @@
+---
+- name: Install vim
+  apt: pkg=vim state=installed update_cache=true
+
+- name: Install tmux
+  apt: pkg=tmux state=installed update_cache=true
+
+- name: Install mc
+  apt: pkg=mc state=installed update_cache=true
+
+- name: Install htop
+  apt: pkg=htop state=installed update_cache=true
+
+- name: Install iftop
+  apt: pkg=iftop state=installed update_cache=true
