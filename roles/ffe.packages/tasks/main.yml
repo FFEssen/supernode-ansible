@@ -13,3 +13,6 @@
 
 - name: Install iftop
   apt: pkg=iftop state=installed update_cache=true
+
+- name: Install fail2ban
+  apt: pkg=fail2ban state=installed update_cache=true
