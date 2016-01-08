@@ -4,4 +4,4 @@
   template: src=iptables.rules.j2 dest=/etc/iptables.rules owner=root mode=0600
 
 - name: Configure ip6tables
-  template: src=ip6tables.rules.j2 dest=/etc/ip6tables.rule owner=root mode=0600
+  template: src=ip6tables.rules.j2 dest=/etc/ip6tables.rules owner=root mode=0600
