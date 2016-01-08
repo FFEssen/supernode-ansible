@@ -16,3 +16,9 @@
 
 - name: Install fail2ban
   apt: pkg=fail2ban state=installed update_cache=true
+
+- name: Install dnsutils
+  apt: pkg=dnsutils state=installed update_cache=true
+
+- name: Install tcpdump
+  apt: pkg=tcpdump state=installed update_cache=true
