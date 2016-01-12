@@ -1,2 +1,4 @@
 ---
-# handlers file for ffe.meshing
+
+- name: Restart fastd
+  service: name=fastd state=restarted
