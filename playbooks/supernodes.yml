@@ -8,3 +8,4 @@
     - ffe.peerings
     - ffe.iptables
     - ffe.openvpn
+    - { role: ffe.meshing, when: fastd_enabled }

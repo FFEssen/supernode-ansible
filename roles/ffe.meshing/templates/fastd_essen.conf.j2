@@ -1,0 +1,26 @@
+bind any:10000 default ipv4;
+secret "{{fastd.essen.secret_key}}";
+
+include peers from "dummy";
+
+interface "tap0";
+log level info;
+mode tap;
+method "salsa2012+umac";
+method "null";
+peer limit 150;
+hide ip addresses yes;
+mtu 1280;
+secure handshakes yes;
+log to syslog level verbose;
+status socket "/tmp/fastd.sock";
+user "fastd";
+
+on up "
+  ip link set up dev $INTERFACE
+  batctl if add $INTERFACE
+";
+
+on verify "
+  blacklist.sh $PEER_KEY
+";

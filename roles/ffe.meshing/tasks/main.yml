@@ -1,0 +1,31 @@
+---
+- name: Ensure fastd config dir exists
+  file: name={{fastd_config_dir}} state=directory owner=fastd mode=0500
+
+- name: Ensure fastd config subdirs exists
+  file: name={{fastd_config_dir}}/{{item}} state=directory owner=fastd mode=0500
+  with_items:
+    - essen
+    - backbone
+
+- name: Create config files
+  template: src=fastd_{{item}}.conf.j2 dest={{fastd_config_dir}}/{{item}}/fastd.conf owner=fastd mode=0400
+  with_items:
+    - essen
+    - backbone
+
+- name: Ensure dummy dir exists
+  file: name={{fastd_config_dir}}/essen/dummy state=directory owner=fastd mode=0500
+
+- name: Ensure server directory exists
+  file: name={{fastd_config_dir}}/backbone/servers state=directory owner=fastd mode=0500
+
+- name: Create server files
+  template: src=server.j2 dest={{fastd_config_dir}}/backbone/servers/{{item.hostname}} owner=fastd mode=0400
+  with_items: fastd_servers
+
+- name: Copy blacklist.sh
+  copy: src=blacklist.sh dest={{fastd_config_dir}}/essen/blacklist.sh owner=fastd mode=0400
+
+- name: Restart fastd
+  service: name=fastd state=restarted
