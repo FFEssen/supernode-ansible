@@ -4,6 +4,7 @@
   become_method: sudo
   roles:
     - ffe.packages
+    - ffe.sysctl
     - ffe.tunnels
     - ffe.peerings
     - ffe.iptables
