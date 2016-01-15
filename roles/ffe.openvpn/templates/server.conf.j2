@@ -22,7 +22,6 @@ dh keys/dh2048.pem
 ifconfig {{server_address}} 255.255.255.0
 ifconfig-ipv6 {{server_address_ipv6}}/64 {{server_address_ipv6}}
 
-route-ipv6 ::
 route-gateway {{server_address}}
 
 topology subnet
