@@ -9,4 +9,7 @@
     - ffe.peerings
     - ffe.iptables
     - ffe.openvpn
-    - { role: ffe.meshing, when: fastd_enabled }
+    - { role: ffe.batman, when: mesh_enabled }
+    - { role: ffe.dhcpd, when: mesh_enabled }
+    - { role: ffe.radvd, when: mesh_enabled }
+    - { role: ffe.fastd, when: mesh_enabled }
