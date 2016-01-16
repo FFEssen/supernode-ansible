@@ -1,5 +1,7 @@
-Role Name
+ffe.packages
 =========
+
+Installs default packages
 
 Requirements
 ------------

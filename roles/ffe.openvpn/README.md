@@ -1,4 +1,4 @@
-Role Name
+ffe.openvpn
 =========
 
 Configures openvpn server
