@@ -14,6 +14,9 @@
 - name: Install iftop
   apt: pkg=iftop state=installed update_cache=true
 
+- name: Install ifstat
+  apt: pkg=ifstat state=installed update_cache=true
+
 - name: Install fail2ban
   apt: pkg=fail2ban state=installed update_cache=true
 
@@ -22,3 +25,6 @@
 
 - name: Install tcpdump
   apt: pkg=tcpdump state=installed update_cache=true
+
+- name: Install logrotate
+  apt: pkg=logrotate state=installed update_cache=true
