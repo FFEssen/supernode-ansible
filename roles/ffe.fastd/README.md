@@ -1,4 +1,4 @@
-ffe.meshing
+ffe.fastd
 =========
 
 configures layer 2 meshing
