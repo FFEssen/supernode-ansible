@@ -1,0 +1,10 @@
+---
+- name: Ensure dhcpd is installed
+  apt: name=isc-dhcp-server state=present update_cache=yes
+
+- name: Ensure config dir exists
+  file: name={{dhcpd_config_dir}} state=directory owner=root mode=0500
+
+- name: Configure dhcpd
+  template: src=dhcpd.conf.j2 dest={{dhcpd_config_dir}}/dhcpd.conf owner=root mode=0400
+  notify: Restart dhcpd
