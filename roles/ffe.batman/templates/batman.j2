@@ -1,0 +1,33 @@
+# Dummy-Interface als MainIF mit manueller MAC fuer batman-adv
+auto meshdummy0
+iface meshdummy0 inet manual
+    pre-up ip link add $IFACE type dummy
+    pre-up ip link set address {{mesh.interface.mac}} dev $IFACE
+    pre-up ip link set up dev $IFACE
+    post-down ip link set down dev $IFACE
+    post-down ip link del dev $IFACE
+    up batctl if add $IFACE
+
+# batman-adv Mesh Interface, wird von meshdummy0 per Hotplug aktiviert
+allow-hotplug {{mesh.interface.name}}
+iface {{mesh.interface.name}} inet static
+    address {{ mesh.interface.ipv4 | ipaddr('address') }}
+    netmask {{ mesh.interface.ipv4 | ipaddr('netmask') }}
+    hwaddress {{mesh.interface.mac}}
+    pre-up ip rule add from {{ mesh.interface.ipv4 | ipaddr('0') }} table 42
+    pre-up ip rule add to {{ mesh.interface.ipv4 | ipaddr('0') }} table 42
+    pre-up batctl it 5000
+    pre-up batctl bl 0
+    pre-up batctl gw server 48mbit/48mbit
+    pre-up echo 120 > /sys/class/net/$IFACE/mesh/hop_penalty
+    post-down ip rule del from {{ mesh.interface.ipv4 | ipaddr('0') }} table 42
+    post-down ip rule del to {{ mesh.interface.ipv4 | ipaddr('0') }} table 42
+
+{% if mesh.interface.ipv6 is defined %}
+iface {{mesh.interface.name}} inet6 static
+    address {{mesh.interface.ipv6}}
+    pre-up ip -6 rule add from {{ mesh.interface.ipv6 | ipsubnet(64, 0) }} table 42
+    pre-up ip -6 rule add to {{ mesh.interface.ipv6 | ipsubnet(64, 0) }} table 42
+    post-down ip -6 rule del from {{ mesh.interface.ipv6 | ipsubnet(64, 0) }} table 42
+    post-down ip -6 rule del to {{ mesh.interface.ipv6 | ipsubnet(64, 0) }} table 42
+{% endif %}

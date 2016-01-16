@@ -1,0 +1,11 @@
+---
+- name: Ensure batctl is installed
+  apt: name=batctl state=present update_cache=yes 
+
+- name: Configure mesh interface
+  template: dest=/etc/network/interfaces.d/batman src=batman.j2 owner=root mode=0644
+
+- name: Enabling interfaces
+  command: /sbin/ifup {{mesh.interface.name}}
+  register: ifup_result
+  changed_when: "'already configured' in ifup_result.stdout"
