@@ -1,0 +1,10 @@
+---
+- name: Ensure unbound is installed
+  apt: name=unbound state=present update_cache=yes
+
+- name: Ensure unbound config dir exists
+  file: name={{unbound_config_dir}} state=directory owner=root mode=0500  
+
+- name: Configure unbound
+  copy: src=supernode.conf dest={{unbound_config_dir}}/unbound.conf.d/supernode.conf owner=root mode=0644
+  notify: Restart unbound
