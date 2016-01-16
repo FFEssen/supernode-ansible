@@ -1,0 +1,17 @@
+{% if mesh.interface.ipv6 is defined %}
+interface {{mesh.interface.name}}
+{
+    AdvSendAdvert on;
+    IgnoreIfMissing on;
+    MaxRtrAdvInterval 20;
+    MinDelayBetweenRAs 10;
+    AdvLinkMTU 1280;
+    prefix {{ mesh.interface.ipv6 | ipsubnet(64, 0) }}
+    {
+    };
+
+    RDNSS {{mesh.interface.ipv6}}
+    {
+    };
+};
+{% endif %}
