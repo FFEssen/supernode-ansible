@@ -9,7 +9,8 @@
     - ffe.peerings
     - ffe.iptables
     - ffe.openvpn
-    - ffe.unbound
+    - { role: ffe.unbound, when: mesh_enabled }
+    - { role: ffe.ntpd, when: mesh_enabled }
     - { role: ffe.batman, when: mesh_enabled }
     - { role: ffe.dhcpd, when: mesh_enabled }
     - { role: ffe.radvd, when: mesh_enabled }

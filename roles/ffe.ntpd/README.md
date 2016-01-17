@@ -1,7 +1,7 @@
-ffe.ntpd
+ffe.dhcpd
 =========
 
-Configures ntp server
+Configures dhcpd server
 
 Requirements
 ------------
