@@ -1,0 +1,6 @@
+---
+- hosts: supernodes
+  become: yes
+  become_method: sudo
+  roles:
+    - ffe.openvpn
