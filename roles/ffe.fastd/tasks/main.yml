@@ -21,7 +21,7 @@
   file: name={{fastd_config_dir}}/backbone/servers state=directory owner=fastd mode=0500
 
 - name: Copy blacklist.sh
-  copy: src=blacklist.sh dest={{fastd_config_dir}}/essen/blacklist.sh owner=fastd mode=0400
+  copy: src=blacklist.sh dest={{fastd_config_dir}}/essen/blacklist.sh owner=fastd mode=0500
 
 - name: Configure fastd
   template: src=server.j2 dest={{fastd_config_dir}}/backbone/servers/{{item.hostname}} owner=fastd mode=0400
