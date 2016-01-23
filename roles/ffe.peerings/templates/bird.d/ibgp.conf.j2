@@ -19,6 +19,7 @@ protocol bgp {{peer.name}} from ibgp {
 {% endfor %}
 {% endif %}
 
+{% if openvpn is defined and sites is defined %}
 template bgp ibgp_site {
     local as {{own_as}};
     import filter ibgp_site_import;
@@ -27,7 +28,6 @@ template bgp ibgp_site {
     multihop 64;
 };
 
-{% if openvpn is defined and sites is defined %}
 {% for site in sites %}
 {% if site.bgp is defined %}
 protocol bgp {{site.bgp.name}} from ibgp_site {

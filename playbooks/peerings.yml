@@ -1,5 +1,7 @@
 ---
-- hosts: supernodes
+- hosts: 
+    - supernodes
+    - map
   become: yes
   become_method: sudo
   roles:

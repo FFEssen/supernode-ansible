@@ -19,6 +19,7 @@
 - name: Configure uplink peerings (IPv4)
   template: src=bird.d/uplink.conf.j2 dest={{bird_config_dir}}/bird.d/uplink.conf owner=bird mode=0600
   notify: Reload bird daemons
+  when: uplink is defined
 
 - name: Configure filters (IPv4)
   template: src=bird.d/filters.conf.j2 dest={{bird_config_dir}}/bird.d/filters.conf owner=bird mode=0600
@@ -35,6 +36,7 @@
 - name: Configure uplink (IPv6) 
   template: src=bird6.d/uplink.conf.j2 dest={{bird_config_dir}}/bird6.d/uplink.conf owner=bird mode=0600
   notify: Reload bird daemons
+  when: uplink is defined
 
 - name: Configure filters (IPv6)
   template: src=bird6.d/filters.conf.j2 dest={{bird_config_dir}}/bird6.d/filters.conf owner=bird mode=0600
