@@ -30,3 +30,7 @@
   template: src=server.j2 dest={{fastd_config_dir}}/backbone/servers/{{item.hostname}} owner=fastd mode=0400
   with_items: fastd_servers
   notify: Restart fastd
+
+- name: Configure rsyslog
+  copy: src=fastd.rsyslog.conf dest=/etc/rsyslog.d/fastd.conf owner=root mode=0644
+  notify: Restart rsyslog

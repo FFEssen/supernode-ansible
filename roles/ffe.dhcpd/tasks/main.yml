@@ -8,3 +8,7 @@
 - name: Configure dhcpd
   template: src=dhcpd.conf.j2 dest={{dhcpd_config_dir}}/dhcpd.conf owner=root mode=0400
   notify: Restart dhcpd
+
+- name: Configure rsyslog
+  copy: src=dhcpd.rsyslog.conf dest=/etc/rsyslog.d/dhcpd.conf owner=root mode=644
+  notify: Restart rsyslog
