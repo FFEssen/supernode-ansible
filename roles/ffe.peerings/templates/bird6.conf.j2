@@ -24,6 +24,11 @@ protocol device {
 };
 
 protocol static {
+    preference 1;
+    route ::/0 unreachable;
+};
+
+protocol static {
 {% if ipv6.prefixes is defined %}
 {% for item in ipv6.prefixes %}
     route {{item.prefix}} via "lo";
