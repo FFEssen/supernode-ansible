@@ -12,7 +12,29 @@
 -A FORWARD -o t-+ -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1280
 
 # drop invalid
+-A INPUT   -m state --state INVALID -j DROP
 -A FORWARD -m state --state INVALID -j DROP
+
+# drop bogus
+-A INPUT -p tcp -m tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
+-A INPUT -p tcp -m tcp --tcp-flags SYN,RST SYN,RST -j DROP
+
+# drop incoming RFC1918 packets
+-A INPUT -i t-+ -s 10.0.0.0/8       -j DROP
+-A INPUT -i t-+ -s 169.254.0.0/16   -j DROP
+-A INPUT -i t-+ -s 172.16.0.0/12    -j DROP
+-A INPUT -i t-+ -s 127.0.0.0/8      -j DROP
+-A INPUT -i t-+ -s 224.0.0.0/4      -j DROP
+-A INPUT -i t-+ -s 240.0.0.0/5      -j DROP
+-A INPUT -i t-+ -s 0.0.0.0/8        -j DROP
+-A INPUT -i t-+ -s 239.255.255.0/24 -j DROP
+-A INPUT -i t-+ -s 255.255.255.255  -j DROP
+
+# allow only nat ip and transfer net to enter tunnel
+-A OUTPUT -o t-+ -s 100.64.0.0/16 -d 100.64.0.0/16 -j ACCEPT
+-A OUTPUT -o t-+ -s {{nat_ip}} -j ACCEPT
+-A OUTPUT -o t-+ -j LOG --log-prefix "invalid packet to backbone"
+-A OUTPUT -o t-+ -j DROP
 
 COMMIT
 
