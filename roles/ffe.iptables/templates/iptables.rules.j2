@@ -12,7 +12,6 @@
 -A FORWARD -o t-+ -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1280
 
 # drop invalid
--A INPUT   -m state --state INVALID -j DROP
 -A FORWARD -m state --state INVALID -j DROP
 
 # drop bogus
