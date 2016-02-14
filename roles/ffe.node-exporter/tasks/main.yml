@@ -1,0 +1,6 @@
+---
+- name: Copy start script
+  copy: src=start_nodeexporter.sh dest=/opt/start_nodeexporter.sh owner=root mode=0744
+
+- name: Start node-exporter
+  shell: /opt/start_nodeexporter.sh

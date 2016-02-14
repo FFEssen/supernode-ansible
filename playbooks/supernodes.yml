@@ -15,3 +15,4 @@
     - { role: ffe.dhcpd, when: mesh_enabled }
     - { role: ffe.radvd, when: mesh_enabled }
     - { role: ffe.fastd, when: mesh_enabled }
+    - ffe.node-exporter

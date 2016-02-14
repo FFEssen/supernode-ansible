@@ -3,31 +3,37 @@
   apt: pkg=vim state=installed update_cache=true
 
 - name: Install tmux
-  apt: pkg=tmux state=installed update_cache=true
+  apt: pkg=tmux state=installed
 
 - name: Install zsh
-  apt: pkg=zsh state=installed update_cache=true
+  apt: pkg=zsh state=installed
 
 - name: Install mc
-  apt: pkg=mc state=installed update_cache=true
+  apt: pkg=mc state=installed
 
 - name: Install htop
-  apt: pkg=htop state=installed update_cache=true
+  apt: pkg=htop state=installed
 
 - name: Install iftop
-  apt: pkg=iftop state=installed update_cache=true
+  apt: pkg=iftop state=installed
 
 - name: Install ifstat
-  apt: pkg=ifstat state=installed update_cache=true
+  apt: pkg=ifstat state=installed
 
 - name: Install fail2ban
-  apt: pkg=fail2ban state=installed update_cache=true
+  apt: pkg=fail2ban state=installed
 
 - name: Install dnsutils
-  apt: pkg=dnsutils state=installed update_cache=true
+  apt: pkg=dnsutils state=installed
 
 - name: Install tcpdump
-  apt: pkg=tcpdump state=installed update_cache=true
+  apt: pkg=tcpdump state=installed
 
 - name: Install logrotate
-  apt: pkg=logrotate state=installed update_cache=true
+  apt: pkg=logrotate state=installed
+
+- name: Install apt-transport-https
+  apt: name=apt-transport-https state=installed 
+
+- name: Install ca-certificates
+  apt: name=ca-certificates state=installed
