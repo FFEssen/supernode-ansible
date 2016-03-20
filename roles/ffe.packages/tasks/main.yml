@@ -37,3 +37,6 @@
 
 - name: Install ca-certificates
   apt: name=ca-certificates state=installed
+
+- name: Install conntrack
+  apt: name=conntrack state=installed
