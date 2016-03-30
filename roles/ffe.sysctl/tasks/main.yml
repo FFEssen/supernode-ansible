@@ -1,4 +1,4 @@
 ---
 - name: Configure sysctl
-  copy: src=sysctl.conf dest=/etc/sysctl.d/10-freifunk.conf owner=root mode=0400
+  copy: src=sysctl.conf dest=/etc/sysctl.conf owner=root mode=0644
   notify: Reload sysctl
