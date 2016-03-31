@@ -8,9 +8,6 @@
 -A FORWARD -s 10.0.0.0/8 -p udp -m udp --dport 10000 -m limit --limit 2/sec -j LOG --log-prefix "fastd over mesh: "
 -A FORWARD -s 10.0.0.0/8 -p udp -m udp --dport 10000 -j REJECT --reject-with icmp-admin-prohibited
 
-# mss clamping
--A FORWARD -o t-+ -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1280
-
 # drop invalid
 -A FORWARD -m state --state INVALID -j DROP
 
@@ -40,5 +37,17 @@ COMMIT
 {% if nat_ip is defined %}
 -A POSTROUTING -o t-+ -j SNAT --to-source {{nat_ip}}
 {% endif %}
+
+COMMIT
+
+*mangle
+:PREROUTING ACCEPT [163021:51379632]
+:INPUT ACCEPT [162885:51374778]
+:FORWARD ACCEPT [3:262]
+:OUTPUT ACCEPT [1104633:171538737]
+:POSTROUTING ACCEPT [1104635:171538947]
+
+# mss clamping
+-A POSTROUTING -o t-+ -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1360
 
 COMMIT
