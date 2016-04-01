@@ -2,6 +2,7 @@
 - hosts: 
     - supernodes
     - map
+    - management
   become: yes
   become_method: sudo
   roles: 
