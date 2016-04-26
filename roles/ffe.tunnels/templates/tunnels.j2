@@ -6,8 +6,17 @@ iface {{tunnel.name}} inet static
     address {{tunnel.ipv4.address}}
     netmask 255.255.255.254
     mtu 1400
+{% if tunnel.protocol == 'gre' %}
     pre-up modprobe ip_gre
     pre-up ip tunnel add {{tunnel.name}} mode gre local {{host_ip}} remote {{tunnel.ipv4.remote}} ttl 64 dev eth0
+{% endif %}
+{% if tunnel.protocol == 'l2tp' %}
+    pre-up modprobe l2tp_eth
+    pre-up modprobe l2tp_ip
+    pre-up ip l2tp add tunnel remote {{tunnel.ipv4.remote}} local {{host_ip}} tunnel_id {{tunnel.id}} peer_tunnel_id {{tunnel.remote_id}} encap ip
+    pre-up ip l2tp add session name {{tunnel.name}} tunnel_id {{tunnel.id}} session_id {{tunnel.id}} peer_session_id {{tunnel.remote_id}}
+    post-up batctl if add {{tunnel.name}}
+{% endif %}
 {% if tunnel.ipv6 is defined %}
     post-up ip -6 addr add {{tunnel.ipv6.address}}/64 dev {{tunnel.name}}
 {% endif %}

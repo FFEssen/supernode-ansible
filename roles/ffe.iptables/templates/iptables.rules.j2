@@ -16,7 +16,7 @@
 -A INPUT -p tcp -m tcp --tcp-flags SYN,RST SYN,RST -j DROP
 
 # allow only nat ip and transfer net to enter tunnel
--A OUTPUT -o t-+ -s 100.64.0.0/16 -d 100.64.0.0/16 -j ACCEPT
+-A OUTPUT -o t-+ -s 100.64.0.0/10 -d 100.64.0.0/10 -j ACCEPT
 {% if nat_ip is defined %}
 -A OUTPUT -o t-+ -s {{nat_ip}} -j ACCEPT
 {% endif %}
