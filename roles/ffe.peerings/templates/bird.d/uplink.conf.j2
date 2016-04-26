@@ -10,9 +10,10 @@ template bgp uplink {
 {% for peer in uplink.peers %}
 {% if peer.ipv4 is defined %}
 protocol bgp {{peer.name}} from uplink {
+{% if peer.ipv4.source is defined %}
     source address {{peer.ipv4.source}};
+{% endif %}
     neighbor {{peer.ipv4.neighbor}} as {{peer.as}};
-    default bgp_med 2;
 };
 
 {% endif %}

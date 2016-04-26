@@ -3,17 +3,13 @@ template bgp ibgp {
     import all;
     export filter only_default;
     next hop self;
-    direct;
-    gateway direct;
 };
 
 {% if ibgp_source.ipv6 is defined %}
 {% for peer in ibgp.peers %}
 {% if peer.ipv6 is defined and peer.ipv6 != ibgp_source.ipv6 %}
 protocol bgp {{peer.name}} from ibgp {
-    source address {{ibgp_source.ipv6}};
     neighbor {{peer.ipv6}} as {{own_as}};
-    default bgp_med 3;
 };
 
 {% endif %}
@@ -26,17 +22,22 @@ template bgp ibgp_site {
     import all;
     export filter only_default;
     next hop self;
-    direct;
-    gateway direct;
 };
 
 {% for site in sites %}
 {% if site.bgp is defined %}
-protocol bgp {{site.bgp.name}} from ibgp_site {
-    source address {{ openvpn.ipv6.server_net | ipaddr('net') | ipaddr('1') | ipaddr('address') }};
+{% if openvpn is defined %}
+protocol bgp {{site.bgp.name}}_ovpn from ibgp_site {
     neighbor {{ openvpn.ipv6.server_net | ipaddr('net') | ipaddr(site.id) | ipaddr('address') }} as {{own_as}};
-    default bgp_med 3;
 };
+{% endif %}
+
+{% if tunneldigger is defined %}
+protocol bgp {{site.bgp.name}}_l2tp from ibgp_site {
+    neighbor {{ tunneldigger.ipv6.server_net | ipsubnet(64, site.id) | ipaddr(2) | ipaddr('address') }} as {{own_as}};
+    default bgp_local_pref 1000;
+};
+{% endif %}
 
 {% endif %}
 {% endfor %}

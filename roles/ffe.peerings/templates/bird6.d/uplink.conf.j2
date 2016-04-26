@@ -2,16 +2,16 @@ template bgp uplink {
     import filter only_default;
     export filter hostroute;
     local as {{own_as}};
-    multihop 64;
 };
 
 {% if uplink.peers is defined %}
 {% for peer in uplink.peers %}
 {% if peer.ipv6 is defined %}
 protocol bgp {{peer.name}} from uplink {
+{% if peer.ipv6.source is defined %}
     source address {{peer.ipv6.source}};
+{% endif %}
     neighbor {{peer.ipv6.neighbor}} as {{peer.as}};
-    default bgp_med 2;
 };
 
 {% endif %}
