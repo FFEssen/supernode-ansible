@@ -1,0 +1,15 @@
+[Unit]
+Description=Prometheus SNMP exporter
+After=network.target auditd.service
+
+[Service]
+ExecStart=/usr/local/bin/snmp_exporter /etc/prometheus/snmp.yml
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+User=prometheus
+
+[Install]
+WantedBy=multi-user.target
+Alias=snmp_exporter.service
+

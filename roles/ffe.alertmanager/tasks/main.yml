@@ -1,0 +1,28 @@
+---
+
+- name: Ensure config dir exists
+  file: name=/etc/prometheus state=directory owner=root mode=0755
+
+- name: Ensure data dir exists
+  file: name=/var/prometheus state=directory owner=prometheus mode=0700
+
+- name: Ensure go is installed
+  apt: name=golang state=present update_cache=yes
+
+- name: Install newest version of alertmanager
+  shell: go get github.com/prometheus/alertmanager
+  environment: 
+    GOPATH: /usr/local
+    GO15VENDOREXPERIMENT: 1
+
+- name: Configure alertmanager
+  template: src=alertmanager.yml.j2 dest=/etc/prometheus/alertmanager.yml owner=root mode=0644
+
+- name: Install systemd unit
+  copy: src=alertmanager.service dest=/lib/systemd/system/alertmanager.service
+
+- name: Reload systemd
+  shell: systemctl daemon-reload
+
+- name: Start service
+  service: name=alertmanager state=restarted enabled=yes

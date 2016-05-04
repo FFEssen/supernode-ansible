@@ -1,0 +1,26 @@
+ALERT ConntrackCritical
+  IF node_nf_conntrack_entries{instance=~"sn-.*"} > 100000
+  FOR 30s
+  LABELS { severity = "page" }
+  ANNOTATIONS {
+    summary = "Conntrack critical on {{ $labels.instance }}",
+    description = "Conntrack table on {{ $labels.instance }} has more than 100k entries.",
+  }
+
+ALERT SupernodeDown
+  IF up{instance=~"sn-.*",job="node"} == 0
+  FOR 30s
+  LABELS { severity = "page" }
+  ANNOTATIONS {
+    summary = "{{ $labels.instance }} down",
+    description = "{{ $labels.instance }} is down for more than 30 sec.",
+  }
+
+ALERT SiteRouterDown
+  IF up{instance=~"gw.*",job=~"snmp_.*"} == 0
+  FOR 1m
+  LABELS { severity = "page" }
+  ANNOTATIONS {
+    summary = "{{ $labels.instance }} down",
+    description = "{{ $labels.instance }} is down for more than 1 min.",
+  }

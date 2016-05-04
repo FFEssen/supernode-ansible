@@ -1,0 +1,15 @@
+[Unit]
+Description=Prometheus
+After=network.target auditd.service
+
+[Service]
+ExecStart=/usr/local/bin/prometheus -config.file=/etc/prometheus/prometheus.yml -storage.local.path=/var/prometheus/data -alertmanager.url=http://127.0.0.1:9093
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+User=prometheus
+
+[Install]
+WantedBy=multi-user.target
+Alias=prometheus.service
+

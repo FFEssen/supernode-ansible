@@ -1,0 +1,34 @@
+---
+
+- name: Ensure config dir exists
+  file: name=/etc/prometheus state=directory owner=root mode=0755
+
+- name: Ensure target group dir exists
+  file: name=/etc/prometheus/tgroups state=directory owner=root mode=0755
+
+- name: Ensure data dir exists
+  file: name=/var/prometheus state=directory owner=prometheus mode=0700
+
+- name: Ensure go is installed
+  apt: name=golang state=present update_cache=yes
+
+- name: Install newest version of prometheus
+  shell: go get github.com/prometheus/prometheus/cmd/prometheus
+  environment: 
+    GOPATH: /usr/local
+    GO15VENDOREXPERIMENT: 1
+
+- name: Configure prometheus
+  copy: src={{item}} dest=/etc/prometheus/{{item}} owner=root mode=0644
+  with_items:
+    - 'prometheus.yml'
+    - 'alerts.rules'
+
+- name: Install systemd unit
+  copy: src=prometheus.service dest=/lib/systemd/system/prometheus.service
+
+- name: Reload systemd
+  shell: systemctl daemon-reload
+
+- name: Start service
+  service: name=prometheus state=restarted enabled=yes
