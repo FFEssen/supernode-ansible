@@ -13,14 +13,14 @@ ALERT SupernodeDown
   LABELS { severity = "page" }
   ANNOTATIONS {
     summary = "{{ $labels.instance }} down",
-    description = "{{ $labels.instance }} is down for more than 30 sec.",
+    description = "{{ $labels.instance }} is down for more than 30 secs.",
   }
 
 ALERT SiteRouterDown
   IF up{instance=~"gw.*",job=~"snmp_.*"} == 0
-  FOR 1m
+  FOR 2m
   LABELS { severity = "page" }
   ANNOTATIONS {
     summary = "{{ $labels.instance }} down",
-    description = "{{ $labels.instance }} is down for more than 1 min.",
+    description = "{{ $labels.instance }} is down for more than 2 mins.",
   }
