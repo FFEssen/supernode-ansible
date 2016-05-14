@@ -5,7 +5,7 @@
 
   - name: Enabling interfaces
     command: /sbin/ifup {{ item.name }}
-    with_items: tunnels
+    with_items: '{{tunnels}}'
     register: ifup_result
     changed_when: "'already configured' in ifup_result.stdout"
   when: tunnels is defined
