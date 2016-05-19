@@ -24,3 +24,12 @@ ALERT SiteRouterDown
     summary = "{{ $labels.instance }} down",
     description = "{{ $labels.instance }} is down for more than 2 mins.",
   }
+
+ALERT DiskSpaceLow
+  IF min(node_filesystem_avail{mountpoint="/"}) by (instance) < 500000000
+  FOR 1m
+  LABELS { severity = "page" }
+  ANNOTATIONS {
+    summary = "Disk space low on {{ $labels.instance }}",
+    description = "Available disk space ({{ $value }}) is less than 500M"
+  }

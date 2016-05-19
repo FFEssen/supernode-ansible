@@ -25,7 +25,9 @@ scrape_configs:
                   'gw01.e-volks.dev.freifunk-essen.net',
                   'gw01.e-zollv.dev.freifunk-essen.net',
                   'gw01.e-erbsl.dev.freifunk-essen.net',
-                  'gw01.e-boegel.dev.freifunk-essen.net'
+                  'gw01.e-boegel.dev.freifunk-essen.net',
+                  'gw01.e-heidb.dev.freifunk-essen.net',
+                  'gw01.e-hambu.dev.freifunk.essen.net'
                  ]
     params:
       module: [default]
