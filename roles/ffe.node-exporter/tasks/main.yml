@@ -1,37 +1,14 @@
 ---
 
-- name: Download and untar node-exporter
-  unarchive: 
-    src=https://github.com/prometheus/node_exporter/releases/download/{{nodeexporter_version}}/node_exporter-{{nodeexporter_version}}.linux-amd64.tar.gz 
-    dest=/usr/local/bin
-    copy=no
+- include: download.yml
 
 - stat: path=/lib/init/upstart-job
   register: upstart
 - stat: path=/bin/systemctl
   register: systemd
 
-- block:
-  - name: Copy upstart config
-    copy: src=upstart.conf dest=/etc/init/node_exporter.conf
-
-  - name: Link upstart-config
-    file: src=/lib/init/upstart-job dest=/etc/init.d/node_exporter
-
-  - name: Configure auto start
-    shell: update-rc.d node-exporter defaults
-
-  - name: Start node-exporter
-    service: name=node-exporter state=started
+- include: configure_initd.yml
   when: upstart.stat.exists
 
-- block:
-  - name: Create systemd unit
-    copy: src=systemd.service dest=/etc/systemd/system/node_exporter.service
-
-  - name: Reload systemd
-    shell: systemctl daemon-reload
-
-  - name: Start node-exporter
-    service: name=node_exporter state=started enabled=yes
+- include: configure_systemd.yml
   when: systemd.stat.exists    
