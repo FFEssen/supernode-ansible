@@ -4,7 +4,7 @@
 auto {{tunnel.name}}
 iface {{tunnel.name}} inet static
     address {{tunnel.ipv4.address}}
-    netmask 255.255.255.254
+    netmask 31
     mtu 1400
 {% if tunnel.protocol == 'gre' %}
     pre-up modprobe ip_gre
