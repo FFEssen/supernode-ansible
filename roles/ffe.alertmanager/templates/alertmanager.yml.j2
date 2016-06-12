@@ -37,3 +37,9 @@ receivers:
 {% for key in pagerduty_keys %}
   - service_key: {{key}}
 {% endfor %}
+{% for config in slack_configs %}
+  slack_configs:
+  - send_resolved: true
+    api_url: {{ config.api_url }}
+    channel: {{ config.channel }} 
+{% endfor %}
