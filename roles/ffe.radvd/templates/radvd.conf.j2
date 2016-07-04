@@ -1,5 +1,5 @@
 {% if mesh.interface.ipv6 is defined %}
-interface {{mesh.interface.name}}
+interface {{ mesh.interface.name }}
 {
     AdvSendAdvert on;
     IgnoreIfMissing on;
@@ -10,7 +10,7 @@ interface {{mesh.interface.name}}
     {
     };
 
-    RDNSS {{mesh.interface.ipv6}}
+    RDNSS {{ mesh.interface.ipv6 | ipaddr('address') }}
     {
     };
 };
