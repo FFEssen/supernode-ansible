@@ -3,6 +3,8 @@ template bgp ibgp {
     import all;
     export filter only_default;
     next hop self;
+    import keep filtered;
+    default bgp_med 10;
 };
 
 {% if ibgp_source.ipv6 is defined %}
@@ -22,6 +24,7 @@ template bgp ibgp_site {
     import all;
     export filter only_default;
     next hop self;
+    import keep filtered;
 };
 
 {% for site in sites %}

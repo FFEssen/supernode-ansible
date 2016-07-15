@@ -2,6 +2,7 @@ template bgp uplink {
     import filter only_default;
     export filter hostroute;
     local as {{own_as}};
+    import keep filtered;
 };
 
 {% if uplink.peers is defined %}

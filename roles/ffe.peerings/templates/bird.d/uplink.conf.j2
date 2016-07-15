@@ -3,7 +3,7 @@ template bgp uplink {
     import filter only_default;
     export filter hostroute;
     next hop self;
-    multihop 64;
+    import keep filtered;
 };
 
 {% if uplink.peers is defined %}

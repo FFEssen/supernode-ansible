@@ -17,7 +17,9 @@ filter only_default {
 
 {% if openvpn is defined %}
 filter ibgp_site_import {
-    if net ~ {{site_prefix}} then accept;
+{% for site_prefix in site_prefixes %}
+    if net ~ {{ site_prefix }} then accept;
+{% endfor %}
     reject;
 };
 {% endif %}
