@@ -1,19 +1,19 @@
 template bgp uplink {
-    local as {{own_as}};
-    import filter only_default;
-    export filter hostroute;
-    next hop self;
-    import keep filtered;
+  local as {{ own_as }};
+  import filter only_default;
+  export filter hostroute;
+  next hop self;
+  import keep filtered;
 };
 
 {% if uplink.peers is defined %}
 {% for peer in uplink.peers %}
 {% if peer.ipv4 is defined %}
-protocol bgp {{peer.name}} from uplink {
+protocol bgp {{ peer.name }} from uplink {
 {% if peer.ipv4.source is defined %}
-    source address {{peer.ipv4.source}};
+  source address {{ peer.ipv4.source }};
 {% endif %}
-    neighbor {{peer.ipv4.neighbor}} as {{peer.as}};
+  neighbor {{ peer.ipv4.neighbor }} as {{ peer.as }};
 };
 
 {% endif %}

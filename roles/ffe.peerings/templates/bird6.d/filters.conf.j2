@@ -1,13 +1,15 @@
 filter hostroute {
+  if DRAINED = 1 then reject;
 {% if ipv6.prefixes is defined %}
 {% for item in ipv6.prefixes %}
-    if net = {{item.prefix}} then accept;
+  if net = {{ item.prefix }} then accept;
 {% endfor %}
 {% endif %}
-    reject;
+  reject;
 };
 
 filter only_default {
-    if net = ::/0 then accept;
-    reject;
+  if DRAINED = 1 then reject;
+  if net = ::/0 then accept;
+  reject;
 };

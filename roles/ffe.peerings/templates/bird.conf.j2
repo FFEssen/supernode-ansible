@@ -1,25 +1,26 @@
 log syslog all;
-router id {{router_id}};
-timeformat protocol "%s";
+router id {{ router_id }};
+
+define DRAINED = 0;
 
 protocol direct {
-    interface "*";
+  interface "*";
 };
 
 protocol kernel {
-    device routes;
-    import all;
-    export all;
-    kernel table 42;
+  device routes;
+  import all;
+  export all;
+  kernel table 42;
 };
 
 protocol device {
-    scan time 10;
+  scan time 10;
 };
 
 protocol static {
-    preference 1;
-    route 0.0.0.0/0 unreachable;
+  preference 1;
+  route 0.0.0.0/0 unreachable;
 };
 
 include "/etc/bird/bird.d/*.conf";
