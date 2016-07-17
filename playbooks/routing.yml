@@ -5,4 +5,4 @@
   become: yes
   become_method: sudo
   roles:
-    - ffe.peerings
+    - ffe.routing

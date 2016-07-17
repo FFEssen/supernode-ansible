@@ -1,0 +1,51 @@
+---
+
+- name: Ensure bird is installed
+  apt: name=bird state=present update_cache=yes
+
+- name: Ensure bird config dir exists
+  file: name={{bird_config_dir}} state=directory owner=bird mode=0700
+
+- name: Ensure bird include dirs exists
+  file: name={{bird_config_dir}}/{{item}} state=directory owner=bird mode=0700
+  with_items:
+    - bird.d
+    - bird6.d
+
+- name: Configure bird
+  template: src={{ item }}.j2 dest={{bird_config_dir}}/{{ item }} owner=bird mode=0600
+  with_items:
+    - bird.conf
+    - bird.d/ospf.conf
+    - bird.d/filters.conf
+  notify: Reload bird
+
+- template: src=bird.d/upstream.conf.j2 dest={{bird_config_dir}}/bird.d/upstream.conf owner=bird mode=0600
+  notify: Reload bird
+  when: upstream is defined
+
+- template: src=bird.d/sites.conf.j2 dest={{bird_config_dir}}/bird.d/sites.conf owner=bird mode=0600
+  notify: Reload bird
+  when: (openvpn is defined or l2tp is defined) and sites is defined
+
+- name: Configure bird6
+  template: src={{ item }}.j2 dest={{bird_config_dir}}/{{ item }} owner=bird mode=0600
+  with_items:
+    - bird6.conf
+    - bird6.d/ospf.conf
+    - bird6.d/filters.conf
+  notify: Reload bird6
+
+- template: src=bird6.d/upstream.conf.j2 dest={{bird_config_dir}}/bird6.d/upstream.conf owner=bird mode=0600
+  notify: Reload bird6
+  when: upstream is defined
+
+- template: src=bird6.d/sites.conf.j2 dest={{bird_config_dir}}/bird6.d/sites.conf owner=bird mode=0600
+  notify: Reload bird6
+  when: (openvpn is defined or l2tp is defined) and sites is defined
+
+- name: Start and enable bird
+  service: name={{item}} state=started enabled=yes
+  with_items:
+    - bird
+    - bird6

@@ -6,7 +6,7 @@
     - ffe.packages
     - ffe.sysctl
     - ffe.tunnels
-    - ffe.peerings
+    - ffe.routing
     - ffe.iptables
     - ffe.openvpn
     - { role: ffe.unbound, when: mesh_enabled }

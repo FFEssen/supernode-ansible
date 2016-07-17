@@ -1,0 +1,7 @@
+---
+
+- name: Reload bird
+  shell: birdc configure soft
+
+- name: Reload bird6
+  shell: birdc6 configure soft

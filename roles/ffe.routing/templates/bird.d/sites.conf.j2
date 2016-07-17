@@ -1,28 +1,7 @@
-template bgp ibgp {
-  local as {{ own_as }};
-  import all;
-  export all;
-  next hop self;
-  import keep filtered;
-  default bgp_local_pref 10;
-};
-
-{% if ibgp_source.ipv4 is defined %}
-{% for peer in ibgp.peers %}
-{% if peer.ipv4 is defined and peer.ipv4 != ibgp_source.ipv4 %}
-protocol bgp {{ peer.name }} from ibgp {
-  neighbor {{ peer.ipv4 }} as {{ own_as }};
-};
-
-{% endif %}
-{% endfor %}
-{% endif %}
-
-{% if (openvpn is defined or l2tp is defined) and sites is defined %}
 template bgp ibgp_site {
   local as {{ own_as }};
-  import filter ibgp_site_import;
-  export filter only_default;
+  import filter site_in;
+  export filter site_out;
   next hop self;
   import keep filtered;
 };
@@ -32,16 +11,15 @@ template bgp ibgp_site {
 {% if openvpn is defined %}
 protocol bgp {{ site.bgp.name }}_ovpn from ibgp_site {
   neighbor {{ openvpn.ipv4.server_net | ipaddr('net') | ipaddr(site.id) | ipaddr('address') }} as {{ own_as }};
+  default bgp_med 10;
 };
 {% endif %}
 
 {% if tunneldigger is defined %}
 protocol bgp {{ site.bgp.name }}_l2tp from ibgp_site {
   neighbor {{ tunneldigger.ipv4.server_net | ipsubnet(24, site.id) | ipaddr(1) | ipaddr('address') }} as {{ own_as }};
-  default bgp_local_pref 1000;
 };
 {% endif %}
 
 {% endif %}
 {% endfor %}
-{% endif %}

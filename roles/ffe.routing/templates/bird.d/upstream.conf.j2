@@ -1,15 +1,16 @@
-template bgp uplink {
+template bgp upstream {
   local as {{ own_as }};
-  import filter only_default;
-  export filter hostroute;
+  import filter upstream_in;
+  export filter upstream_out;
   next hop self;
   import keep filtered;
+  default bgp_local_pref 1000;
 };
 
-{% if uplink.peers is defined %}
-{% for peer in uplink.peers %}
+{% if upstream.peers is defined %}
+{% for peer in upstream.peers %}
 {% if peer.ipv4 is defined %}
-protocol bgp {{ peer.name }} from uplink {
+protocol bgp {{ peer.name }} from upstream {
 {% if peer.ipv4.source is defined %}
   source address {{ peer.ipv4.source }};
 {% endif %}

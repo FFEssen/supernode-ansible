@@ -1,0 +1,12 @@
+protocol ospf {
+  import all;
+  export filter ospf_out;
+  area 0.0.0.0 {
+    interface "l2-*" {
+      cost 1000;
+    };
+    interface "lo" {
+      stub yes;
+    };
+  };
+};

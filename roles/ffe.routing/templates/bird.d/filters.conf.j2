@@ -1,0 +1,44 @@
+function is_own_prefix() {
+{% if nat_ip is defined %}
+  if net = {{ nat_ip }}/32 then return true;
+{% endif %}
+  return false;
+}
+
+function is_default_route() {
+  return net = 0.0.0.0/0;
+}
+
+filter upstream_in {
+  if DRAINED = 1 then reject;
+  if is_default_route() then accept;
+  reject;
+};
+
+filter upstream_out {
+  if DRAINED = 1 then reject;
+  if is_own_prefix() then accept;
+  reject;
+};
+
+{% if site_prefixes is defined %}
+filter site_in {
+  if DRAINED = 1 then reject;
+{% for site_prefix in site_prefixes %}
+  if net ~ {{ site_prefix }} then accept;
+{% endfor %}
+  reject;
+};
+
+filter site_out {
+  if DRAINED = 1 then reject;
+  if is_default_route() then accept;
+  reject;
+};
+{% endif %}
+
+filter ospf_out {
+  if DRAINED = 1 then reject;
+  if is_own_prefix() then accept;
+  reject;
+};
