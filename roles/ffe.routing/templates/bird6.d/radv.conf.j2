@@ -1,0 +1,8 @@
+protocol radv {
+  interface "bat0" {
+    link mtu 1280;
+    prefix {{ mesh.interface.ipv6 | ipsubnet(64, 0) }} {
+    };
+    rdnss {{ mesh.interface.ipv6 | ipaddr('address') }};
+  };
+}

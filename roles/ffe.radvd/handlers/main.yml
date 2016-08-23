@@ -1,7 +1,0 @@
----
-
-- name: Restart radvd
-  service: name=radvd state=restarted
-
-- name: Restart rsyslogd
-  service: name=rsyslog state=restarted
