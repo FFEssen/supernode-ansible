@@ -1,2 +1,4 @@
 ---
-# handlers file for alertmanager
+
+- name: Restart alertmanager
+  service: name=alertmanager state=restarted

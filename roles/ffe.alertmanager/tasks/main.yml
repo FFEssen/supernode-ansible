@@ -14,9 +14,11 @@
   environment: 
     GOPATH: /usr/local
     GO15VENDOREXPERIMENT: 1
+  notify: Restart alertmanager
 
 - name: Configure alertmanager
   template: src=alertmanager.yml.j2 dest=/etc/prometheus/alertmanager.yml owner=root mode=0644
+  notify: Restart alertmanager
 
 - name: Install systemd unit
   copy: src=alertmanager.service dest=/lib/systemd/system/alertmanager.service
