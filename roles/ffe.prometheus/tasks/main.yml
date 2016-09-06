@@ -17,12 +17,14 @@
   environment: 
     GOPATH: /usr/local
     GO15VENDOREXPERIMENT: 1
+  notify: Restart prometheus
 
 - name: Configure prometheus
   copy: src={{item}} dest=/etc/prometheus/{{item}} owner=root mode=0644
   with_items:
     - 'prometheus.yml'
     - 'alerts.rules'
+  notify: Restart prometheus
 
 - name: Install systemd unit
   copy: src=prometheus.service dest=/lib/systemd/system/prometheus.service

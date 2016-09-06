@@ -13,11 +13,10 @@ rule_files:
 
 scrape_configs:
   - job_name: 'snmp_ffe'
-    scrape_interval: 60s
+    scrape_interval: 30s
     scrape_timeout: 30s
     target_groups:
       - targets: [
-                  'gw01.e-alten.dev.freifunk-essen.net',
                   'gw01.e-awo-jlh.dev.freifunk-essen.net', 
                   'gw01.e-esh.dev.freifunk-essen.net', 
                   'gw01.e-hatzp.dev.freifunk-essen.net',
@@ -28,7 +27,7 @@ scrape_configs:
                   'gw01.e-boegel.dev.freifunk-essen.net',
                   'gw01.e-heidb.dev.freifunk-essen.net',
                   'gw01.e-hambu.dev.freifunk-essen.net',
-                  'gw01.e-gerha.dev.freifunk-essen.net.'
+                  'gw01.e-gerha.dev.freifunk-essen.net'
                  ]
     params:
       module: [default]
@@ -83,3 +82,23 @@ scrape_configs:
     scrape_interval: 30s
     target_groups:
       - targets: ['localhost:9120']
+
+  - job_name: 'snmp_ruckus'
+    scrape_interval: 30s
+    target_groups:
+      - targets: ['ap02.e-event.dev.freifunk-essen.net']
+    params:
+      module: [default]
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: (.*?)(:80)?
+        target_label: __param_address
+        replacement: ${1}
+      - source_labels: [__param_address]
+        regex: (.*)
+        target_label: instance
+        replacement: ${1}
+      - source_labels: []
+        regex: .*
+        target_label: __address__
+        replacement: 127.0.0.1:10000

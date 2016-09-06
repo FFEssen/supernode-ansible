@@ -1,2 +1,4 @@
 ---
-# handlers file for prometheus
+
+- name: Restart prometheus
+  service: name=prometheus state=restarted
