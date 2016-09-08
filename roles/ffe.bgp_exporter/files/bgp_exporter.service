@@ -1,0 +1,15 @@
+[Unit]
+Description=Prometheus BGP exporter
+After=network.target auditd.service
+
+[Service]
+ExecStart=/usr/bin/ruby /usr/local/bin/bgp_exporter.rb
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+User=prometheus
+
+[Install]
+WantedBy=multi-user.target
+Alias=bgp_exporter.service
+

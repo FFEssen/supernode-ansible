@@ -1,0 +1,20 @@
+---
+
+- name: Ensure ruby is installed
+  apt: name=ruby state=installed
+
+- name: Ensure rack gem is installed
+  gem: name=Rack state=latest
+
+- name: Install bgp_exporter
+  copy: src=bgp_exporter.rb dest=/usr/local/bin/bgp_exporter.rb owner=root mode=0755
+  notify: Restart bgp_exporter
+
+- name: Install systemd unit
+  copy: src=bgp_exporter.service dest=/lib/systemd/system/bgp_exporter.service owner=root mode=0644
+
+- name: Reload systemd
+  shell: systemctl daemon-reload 
+
+- name: Enable and start service
+  service: name=bgp_exporter state=restarted enabled=yes

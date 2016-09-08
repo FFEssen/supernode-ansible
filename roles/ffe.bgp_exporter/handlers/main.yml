@@ -1,0 +1,4 @@
+---
+
+- name: Restart bgp_exporter
+  service: name=bgp_exporter state=restarted
