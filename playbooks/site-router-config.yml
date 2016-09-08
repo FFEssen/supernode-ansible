@@ -1,0 +1,7 @@
+---
+- hosts: localhost
+  connection: local
+  vars:
+    site_config_dir: ~/freifunk/site-configs
+  roles:
+    - { role: ffe.site-router-config }

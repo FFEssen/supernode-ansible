@@ -1,0 +1,4 @@
+---
+
+- include: generate_config.yml site={{ item }}
+  with_items: '{{ sites }}'
