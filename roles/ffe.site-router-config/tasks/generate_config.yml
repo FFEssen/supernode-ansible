@@ -10,7 +10,7 @@
   template: src=openvpn-up.sh.j2 dest={{ site_config_dir }}/{{ site.name }}/openvpn-up.sh mode=0755
 
 - name: Ensure start scripts are up to date
-  copy: src=scripts dest={{ site_config_dir }}/{{ site.name }}/scripts
+  copy: src=scripts dest={{ site_config_dir }}/{{ site.name }} mode=0755
 
 - file: path={{ site_config_dir }}/{{ site.name }}/scripts/post-config.d state=directory mode=0750
 - template: src=start_tunneldigger.sh.j2 dest={{ site_config_dir }}/{{ site.name }}/scripts/post-config.d/start_tunneldigger.sh mode=0755

@@ -2,3 +2,4 @@
 
 - include: generate_config.yml site={{ item }}
   with_items: '{{ sites }}'
+  when: item.config_ansible is defined and item.config_ansible

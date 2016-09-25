@@ -25,6 +25,9 @@ firewall {
 interfaces {
     ethernet eth0 {
         address dhcp
+        dhcp-options {
+          default-route no-update
+        }
         description Uplink
         duplex auto
         speed auto
@@ -42,7 +45,7 @@ interfaces {
         speed auto
     }
     ethernet eth4 {
-        address 172.16.{{ site.id }}.1/24
+        address {{ site.mgmt.ipv4 | ipaddr(1) }}
         description Management
         duplex auto
         speed auto
@@ -200,12 +203,12 @@ service {
         }
         shared-network-name MGMT {
             authoritative disable
-            subnet 172.16.{{ site.id }}.0/24 {
-                default-router 172.16.{{ site.id }}.1
-                dns-server 172.16.{{ site.id }}.1
+            subnet {{ site.mgmt.ipv4 }} {
+                default-router {{ site.mgmt.ipv4 | ipaddr(1) | ipaddr('address') }}
+                dns-server {{ site.mgmt.ipv4 | ipaddr(1) | ipaddr('address') }}
                 lease 86400
-                start 172.16.{{ site.id }}.100 {
-                    stop 172.16.{{ site.id }}.120
+                start {{ site.mgmt.ipv4 | ipaddr(100) | ipaddr('address') }} {
+                    stop {{ site.mgmt.ipv4 | ipaddr(120) | ipaddr('address') }}
                 }
             }
         }
@@ -237,7 +240,7 @@ service {
             client 172.16.0.6
         }
         contact noc@freifunk-essen.de
-        listen-address 172.16.{{ site.id }}.1 {
+        listen-address {{ site.mgmt.ipv4 | ipaddr(1) | ipaddr('address') }} {
             port 161
         }
         location {{ site.name }}

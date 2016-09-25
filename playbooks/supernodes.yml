@@ -13,6 +13,5 @@
     - { role: ffe.ntpd, when: mesh_enabled }
     - { role: ffe.batman, when: mesh_enabled }
     - { role: ffe.dhcpd, when: mesh_enabled }
-    - { role: ffe.radvd, when: mesh_enabled }
     - { role: ffe.fastd, when: mesh_enabled }
     - ffe.node-exporter
