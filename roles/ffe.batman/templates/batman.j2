@@ -4,8 +4,6 @@ iface meshdummy0 inet manual
     pre-up ip link add $IFACE type dummy
     pre-up ip link set address {{mesh.interface.mac}} dev $IFACE
     pre-up ip link set up dev $IFACE
-    post-down ip link set down dev $IFACE
-    post-down ip link del dev $IFACE
     up batctl if add $IFACE
 
 # batman-adv Mesh Interface, wird von meshdummy0 per Hotplug aktiviert

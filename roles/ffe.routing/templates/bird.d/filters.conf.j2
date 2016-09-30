@@ -9,15 +9,25 @@ function is_default_route() {
   return net = 0.0.0.0/0;
 }
 
+filter drain {
+  reject;
+};
+
 filter upstream_in {
   if DRAINED = 1 then reject;
-  if is_default_route() then accept;
+
+  if is_default_route() then {
+    bgp_local_pref = 1000;
+    accept;
+  }
+
   reject;
 };
 
 filter upstream_out {
   if DRAINED = 1 then reject;
   if is_own_prefix() then accept;
+
   reject;
 };
 
@@ -27,18 +37,53 @@ filter site_in {
 {% for site_prefix in site_prefixes %}
   if net ~ {{ site_prefix }} then accept;
 {% endfor %}
+
   reject;
 };
 
 filter site_out {
   if DRAINED = 1 then reject;
   if is_default_route() then accept;
+
   reject;
 };
 {% endif %}
 
+filter ospf_in {
+  if DRAINED = 1 then reject;
+{% if id is defined %}
+  if net = {{ intern_net | ipaddr(id) | ipaddr('address') }}/32 then reject;
+  if net ~ [ {{ intern_net }}{32,32} ] then accept;
+{% endif %}
+
+  reject;
+};
+
 filter ospf_out {
   if DRAINED = 1 then reject;
-  if is_own_prefix() then accept;
+{% if id is defined %}
+  if net = {{ intern_net | ipaddr(id) | ipaddr('address') }}/32 then accept;
+{% endif %}
+
+  reject;
+};
+
+filter ibgp_in {
+  if DRAINED = 1 then reject;
+  
+  if is_default_route() then {
+    if source = RTS_BGP then {
+      bgp_local_pref = 100;
+      accept;
+    }
+  }
+
+  reject;
+};
+
+filter ibgp_out {
+  if DRAINED = 1 then reject;
+  if is_default_route() then accept;
+
   reject;
 };

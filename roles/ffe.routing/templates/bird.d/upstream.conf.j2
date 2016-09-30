@@ -4,7 +4,6 @@ template bgp upstream {
   export filter upstream_out;
   next hop self;
   import keep filtered;
-  default bgp_local_pref 1000;
 };
 
 {% if upstream.peers is defined %}

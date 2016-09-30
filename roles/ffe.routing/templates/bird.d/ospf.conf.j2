@@ -1,4 +1,14 @@
+table OSPF;
+
+protocol kernel kernel_ospf {
+  table OSPF;
+  import none;
+  export filter ospf_in;
+  kernel table 254;
+};
+
 protocol ospf {
+  table OSPF;
   import all;
   export filter ospf_out;
   area 0.0.0.0 {
