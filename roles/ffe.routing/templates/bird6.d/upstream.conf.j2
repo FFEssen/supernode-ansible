@@ -15,11 +15,9 @@ filter upstream_out {
   reject;
 };
 
-template bgp upstream {
+template bgp upstream from generic_bgp {
   import filter upstream_in;
   export filter upstream_out;
-  local as {{ own_as }};
-  import keep filtered;
 };
 
 {% if upstream.peers is defined %}

@@ -14,12 +14,9 @@ filter site_out {
   reject;
 };
 
-template bgp ibgp_site {
-  local as {{ own_as }};
+template bgp ibgp_site from generic_bgp {
   import filter site_in;
   export filter site_out;
-  next hop self;
-  import keep filtered;
 };
 
 {% for site in sites %}

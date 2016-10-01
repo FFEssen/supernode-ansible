@@ -20,6 +20,11 @@
     - bird.d/filters.conf
   notify: Reload bird
 
+- template: src=bgp.conf.j2 dest={{bird_config_dir}}/bgp.conf owner=bird mode=0600
+  notify: 
+    - Reload bird
+    - Relaod bird6
+
 - template: src=bird.d/upstream.conf.j2 dest={{bird_config_dir}}/bird.d/upstream.conf owner=bird mode=0600
   notify: Reload bird
   when: upstream is defined
@@ -32,8 +37,7 @@
   notify: Reload bird
   when: ibgp_name is defined
 
-- name: Configure bird6
-  template: src={{ item }}.j2 dest={{bird_config_dir}}/{{ item }} owner=bird mode=0600
+- template: src={{ item }}.j2 dest={{bird_config_dir}}/{{ item }} owner=bird mode=0600
   with_items:
     - bird6.conf
     - bird6.d/ospf.conf

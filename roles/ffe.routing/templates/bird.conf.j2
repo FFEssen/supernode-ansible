@@ -23,4 +23,5 @@ protocol static {
   route 0.0.0.0/0 unreachable;
 };
 
+include "/etc/bird/bgp.conf";
 include "/etc/bird/bird.d/*.conf";

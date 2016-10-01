@@ -18,12 +18,9 @@ filter ibgp_out {
   reject;
 };
 
-template bgp ibgp {
-  local as {{ own_as }};
+template bgp ibgp from generic_bgp {
   import filter ibgp_in;
   export filter ibgp_out;
-  next hop self;
-  import keep filtered;
   source address {{ intern_net6 | ipaddr(id) | ipaddr('address') }};
 };
 
