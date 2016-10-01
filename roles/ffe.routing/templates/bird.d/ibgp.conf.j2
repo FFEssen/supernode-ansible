@@ -1,3 +1,23 @@
+filter ibgp_in {
+  if DRAINED = 1 then reject;
+  
+  if is_default_route() then {
+    if source = RTS_BGP then {
+      bgp_local_pref = 100;
+      accept;
+    }
+  }
+
+  reject;
+};
+
+filter ibgp_out {
+  if DRAINED = 1 then reject;
+  if is_default_route() then accept;
+
+  reject;
+};
+
 template bgp ibgp {
   local as {{ own_as }};
   import filter ibgp_in;
