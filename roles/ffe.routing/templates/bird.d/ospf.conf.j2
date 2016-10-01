@@ -26,9 +26,14 @@ protocol kernel kernel_ospf {
   kernel table 254;
 };
 
+protocol direct direct_ospf {
+  table OSPF;
+  interface "lo";
+};
+
 protocol ospf {
   table OSPF;
-  import all;
+  import filter ospf_in;
   export filter ospf_out;
   area 0.0.0.0 {
     interface "l2-*" {

@@ -1,9 +1,25 @@
+filter upstream_in {
+  if DRAINED = 1 then reject;
+  if is_default_route() then {
+    bgp_local_pref = 1000;
+    accept;
+  }
+
+  reject;
+};
+
+filter upstream_out {
+  if DRAINED = 1 then reject;
+  if is_own_prefix() then accept;
+
+  reject;
+};
+
 template bgp upstream {
   import filter upstream_in;
   export filter upstream_out;
   local as {{ own_as }};
   import keep filtered;
-  default bgp_local_pref 1000;
 };
 
 {% if upstream.peers is defined %}

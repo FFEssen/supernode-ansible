@@ -1,3 +1,10 @@
+filter site_out {
+  if DRAINED = 1 then reject;
+  if is_default_route() then accept;
+
+  reject;
+};
+
 template bgp ibgp_site {
   local as {{own_as}};
   import all;

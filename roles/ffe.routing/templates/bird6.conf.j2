@@ -8,9 +8,7 @@ protocol direct {
 };
 
 protocol kernel {
-  persist;
   device routes;
-  scan time 20;
   import all;
   export all;
   kernel table 42;

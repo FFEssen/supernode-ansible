@@ -48,6 +48,10 @@
   notify: Reload bird6
   when: (openvpn is defined or l2tp is defined) and sites is defined
 
+- template: src=bird6.d/ibgp.conf.j2 dest={{bird_config_dir}}/bird6.d/ibgp.conf owner=bird mode=0600
+  notify: Reload bird6
+  when: ibgp_name is defined
+
 - template: src=bird6.d/radv.conf.j2 dest={{bird_config_dir}}/bird6.d/radv.conf owner=bird mode=0600
   notify: Reload bird6
   when: mesh is defined

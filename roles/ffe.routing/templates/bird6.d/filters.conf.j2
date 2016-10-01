@@ -10,26 +10,3 @@ function is_own_prefix() {
 function is_default_route() {
   return net = ::/0;
 }
-
-filter upstream_in {
-  if DRAINED = 1 then reject;
-  if is_default_route() then accept;
-  reject;
-};
-
-filter upstream_out {
-  if DRAINED = 1 then reject;
-  if is_own_prefix() then accept;
-  reject;
-};
-
-filter site_out {
-  if DRAINED = 1 then reject;
-  if is_default_route() then accept;
-  reject;
-};
-
-filter ospf_out {
-  if DRAINED = 1 then reject;
-  reject;
-};
