@@ -23,7 +23,7 @@
 - template: src=bgp.conf.j2 dest={{bird_config_dir}}/bgp.conf owner=bird mode=0600
   notify: 
     - Reload bird
-    - Relaod bird6
+    - Reload bird6
 
 - template: src=bird.d/upstream.conf.j2 dest={{bird_config_dir}}/bird.d/upstream.conf owner=bird mode=0600
   notify: Reload bird
