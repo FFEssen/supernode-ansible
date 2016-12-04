@@ -23,8 +23,9 @@
 -A OUTPUT -o t-+ -j LOG --log-prefix "invalid packet to backbone"
 -A OUTPUT -o t-+ -j DROP
 
-# allow port 9100 only for prometheus
+# allow only for prometheus
 -A INPUT -p tcp --dport 9100 ! -s {{monitoring_host_ip}} -j DROP
+-A INPUT -p tcp --dport 9200 ! -s {{monitoring_host_ip}} -j DROP
 
 COMMIT
 
