@@ -3,6 +3,8 @@
 :FORWARD ACCEPT [113805:93229278]
 :OUTPUT ACCEPT [2601:292066]
 
+-A INPUT -i lo -j ACCEPT
+
 -A INPUT -s 2a03:2260::/30 -p udp -m udp --dport 10000 -m limit --limit 2/sec -j LOG --log-prefix "fastd over mesh: "
 -A INPUT -s 2a03:2260::/30 -p udp -m udp --dport 10000 -j REJECT --reject-with icmp6-adm-prohibited
 -A FORWARD -s 2a03:2260::/30 -p udp -m udp --dport 10000 -m limit --limit 2/sec -j LOG --log-prefix "fastd over mesh: "
