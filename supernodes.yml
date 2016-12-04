@@ -1,7 +1,5 @@
 ---
 - hosts: supernodes
-  become: yes
-  become_method: sudo
   roles:
     - ffe.packages
     - ffe.sysctl
@@ -15,3 +13,4 @@
     - { role: ffe.dhcpd, when: mesh_enabled }
     - { role: ffe.fastd, when: mesh_enabled }
     - ffe.node-exporter
+    - ffe.bird_bgp_exporter

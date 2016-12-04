@@ -1,6 +1,0 @@
----
-- hosts: supernodes
-  become: yes
-  become_method: sudo
-  roles:
-    - { role: ffe.sysctl }

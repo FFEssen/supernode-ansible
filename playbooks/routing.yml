@@ -1,8 +1,0 @@
----
-- hosts: 
-    - supernodes
-    - map
-  become: yes
-  become_method: sudo
-  roles:
-    - ffe.routing

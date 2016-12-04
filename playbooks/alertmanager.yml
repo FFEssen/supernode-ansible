@@ -1,7 +1,0 @@
----
-- hosts: 
-    - monitoring
-  become: yes
-  become_method: sudo
-  roles:
-    - { role: ffe.alertmanager }

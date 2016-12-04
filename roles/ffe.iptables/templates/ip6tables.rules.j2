@@ -9,6 +9,6 @@
 -A FORWARD -s 2a03:2260::/30 -p udp -m udp --dport 10000 -j REJECT --reject-with icmp6-adm-prohibited
 
 # drop invalid
--A FORWARD -m state --state INVALID -j DROP
+#-A FORWARD -m state --state INVALID -j DROP
 
 COMMIT

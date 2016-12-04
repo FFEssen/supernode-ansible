@@ -1,0 +1,7 @@
+---
+
+- name: Reload systemd
+  shell: systemctl daemon-reload
+
+- name: Restart bird_bgp_exporter
+  service: name=bird_bgp_exporter state=restarted

@@ -1,0 +1,20 @@
+---
+
+- name: Ensure go is installed
+  apt: name=golang state=installed
+
+- name: Ensure bird bgp exporter is installed 
+  environment:
+    GOPATH: /usr/local
+  shell: go get github.com/czerwonk/go-bird_bgp_exporter
+  notify: Restart bird_bgp_exporter
+  
+- name: Ensure service is installed
+  copy: src=bird_bgp_exporter.service dest=/lib/systemd/system/bird_bgp_exporter.service owner=root mode=0644
+  notify: Reload systemd
+
+- name: Ensure service is enabled
+  service: name=bird_bgp_exporter enabled=yes
+
+- name: Ensure service is started
+  service: name=bird_bgp_exporter state=started

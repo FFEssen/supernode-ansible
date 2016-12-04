@@ -1,6 +1,0 @@
----
-- hosts: [ supernodes, map ]
-  become: yes
-  become_method: sudo
-  roles:
-    - { role: ffe.tunnels }
