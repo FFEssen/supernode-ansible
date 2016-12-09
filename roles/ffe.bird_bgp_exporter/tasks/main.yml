@@ -6,7 +6,7 @@
 - name: Ensure bird bgp exporter is installed 
   environment:
     GOPATH: /usr/local
-  shell: go get github.com/czerwonk/go-bird_bgp_exporter
+  shell: go get github.com/czerwonk/bird_bgp_exporter
   notify: Restart bird_bgp_exporter
   
 - name: Ensure service is installed

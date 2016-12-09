@@ -3,7 +3,7 @@ Description=Bird BGP Exporter
 
 [Service]
 User=bird
-ExecStart=/usr/local/bin/go-bird_bgp_exporter
+ExecStart=/usr/local/bin/bird_bgp_exporter
 
 [Install]
 WantedBy=default.target
