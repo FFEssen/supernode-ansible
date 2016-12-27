@@ -1,8 +1,0 @@
-#!/bin/sh
-ip route add default dev $2 table 42 metric $1
-
-if $2 = 'vtun4'
-then
-  ip -6 route add default dev $2 table 42
-  ip -6 rule add from {{ (site.prefixes | first).ipv6 | ipsubnet(64, 0) }} lookup 42
-fi

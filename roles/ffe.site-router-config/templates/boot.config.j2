@@ -6,17 +6,6 @@ firewall {
     ipv6-src-route disable
     ip-src-route disable
     log-martians enable
-    modify ROUTE_WITH_TABLE42 {
-        rule 10 {
-            action modify
-            modify {
-                table 42
-            }
-            source {
-                address {{ prefix.ipv4 }}
-            }
-        }
-    }
     receive-redirects disable
     send-redirects enable
     source-validation disable
@@ -53,11 +42,6 @@ interfaces {
             address {{ prefix.ipv4 | ipaddr(1) }}
             address {{ prefix.ipv6 | ipsubnet(64, 0) | ipaddr(1) }}
             description Freifunk
-            firewall {
-                in {
-                    modify ROUTE_WITH_TABLE42
-                }
-            }
             ipv6 {
                 dup-addr-detect-transmits 1
                 router-advert {
@@ -75,6 +59,12 @@ interfaces {
             }
         }
     }
+{% if (site.model | default('')) == 'ER-X-SFP' %}
+    ethernet eth5 {
+        duplex auto
+        speed auto
+    }
+{% endif %}
     loopback lo {
     }
     openvpn vtun0 {
@@ -100,7 +90,7 @@ interfaces {
 policy {
     prefix-list sn-in {
         rule 10 {
-            action deny
+            action permit
             le 32
             prefix 0.0.0.0/0
         }
@@ -143,6 +133,61 @@ protocols {
                 inbound
             }
         }
+        neighbor 10.228.100.1 {
+            nexthop-self
+            prefix-list {
+                export sn-out
+                import sn-in
+            }
+            remote-as 65406
+            soft-reconfiguration {
+                inbound
+            }
+        }
+        neighbor 10.228.101.1 {
+            nexthop-self
+            prefix-list {
+                export sn-out
+                import sn-in
+            }
+            remote-as 65406
+            soft-reconfiguration {
+                inbound
+            }
+        }
+        neighbor 10.228.102.1 {
+            nexthop-self
+            prefix-list {
+                export sn-out
+                import sn-in
+            }
+            remote-as 65406
+            soft-reconfiguration {
+                inbound
+            }
+        }
+        neighbor 10.228.103.1 {
+            nexthop-self
+            prefix-list {
+                export sn-out
+                import sn-in
+            }
+            remote-as 65406
+            soft-reconfiguration {
+                inbound
+            }
+        }
+        neighbor 100.72.{{ site.id }}.0 {
+            nexthop-self
+            prefix-list {
+                export sn-out
+                import sn-in
+            }
+            remote-as 65406
+            soft-reconfiguration {
+                inbound
+            }
+        }
         neighbor 2a03:2260:2007:90{{ site.id }}::1 {
             address-family {
                 ipv6-unicast {
@@ -167,7 +212,23 @@ protocols {
     }
 {% if site.gateway is defined %}
     static {
-        route 0.0.0.0/0 {
+        route 151.80.64.184/32 {
+            next-hop {{ site.gateway }} {
+            }
+        }
+        route 151.80.64.185/32 {
+            next-hop {{ site.gateway }} {
+            }
+        }
+        route 185.46.137.143/32 {
+            next-hop {{ site.gateway }} {
+            }
+        }
+        route 185.46.137.144/32 {
+            next-hop {{ site.gateway }} {
+            }
+        }
+        route 185.66.195.248/32 {
             next-hop {{ site.gateway }} {
             }
         }
@@ -259,8 +320,8 @@ system {
             authentication {
                 encrypted-password $6$huD7NZ.GU1AHW0n$jCf1rYMZ.JuOLf14xLsLuQXg4rQyGs5/kDl/JmYim2wnZirDohZPAfNHmV8AZsR1rlOm5yX/xgFB8.Z1A9D4y.
                 plaintext-password ""
-                public-keys cardno:000603645228 {
-                    key AAAAB3NzaC1yc2EAAAADAQABAAABAQC9dBNX+7+NXX9TdaiP295HNgFyHiQM0BVbp9gXUXgHInY5NL1bqHwMgsyVfxY8GE8KOPJJUV2zzlp453fjZluG9ZIjOs6l1yxJGyomNuGuf0clwpUmUUWC8/e5Tg6rAj+Sa6HKlsE8qG7l87wBhmNNJLWA5hZ9ylQZiXuJ6ljOQPIeK4H+rVzH5VVtt+n0O6SL/UqMrqXE9GGT0cgBgA9p/Jbf4kqBBpdh2lP6XoJJEySb+mk7HOwXY6QmozZDqy2XHKQo8ZM55lZDOe7jcqYfsA5P+4OYKaEEgIGWTU3L5n2tUQf6yjS+z/8vzDbCk1QLkPW4VJGlldl+qL0VQIed
+                public-keys dan-thinkpad {
+                    key AAAAB3NzaC1yc2EAAAADAQABAAACAQC/D9Ap19MxtlKqXmU7uRd7KvfN8oGEK7CMl/Og5a7BHqOh6Y0554DkWzTzuD2HNqGqhIhaFMQRLlC4IBLnwd03oNyUO4GtLDjSXsEGynryo0a+iCtXNbh6jT9VL6SBD8jCr0hJDuY9V0vdTimb9WXhzX7jm5rIuLvmYuJqasCirfORROL6lneGGW9O3r/uWPmYGZX4gnI883TinqJhtTNGZiRfhhR6EMc+n2m1IYDLR19ZesnX/V0IlzWIxmmNI6zOEu2HSjipfjwI3qIjz8SuktV5CjQ41U9nCd1g6V7cKqaV3V2YOucI8htYOUMa7wfURoUQCC7rMzV1MDYyufdQUGx4LaVdk7y/ooPXOY8NYyDeX9NAfcQHcg3kWZfBOJT6SotfqVX08EGQDM8NJIvzZ1YduC256zbsIIKLo0BG+tccMbxvxlRuFepxGSDh2k7sALbdFSR3WRK//9lZ/94ySgF/wj2dffp4Og2NAi8H+1rYdYTmeMIrAEq2Yg5xEJpveQCqg4wmTPS6MEN4fTPh9Ly2I9NIYmdnSoSdpEk8GTs7boWrpJNXU3D0fK5MyYMiBp6kYxubBLKxRmqvtatu+ocsMrVwBcSUBGclzEuEZJfYeGno5hUzqbdTPgqe9FfrIwr5Jm+mwNuriDq8QLjPveJpQRrE3vExokBMbLS/vw== 
                     type ssh-rsa
                 }
             }

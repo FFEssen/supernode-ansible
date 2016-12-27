@@ -5,33 +5,46 @@ filter site_in {
 {% endfor %}
 
   reject;
-};
+}
 
-filter site_out {
+function site_out() {
   if DRAINED = 1 then reject;
-  if is_default_route() then accept;
 
-  reject;
-};
+  return is_default_route();
+}
+
+filter site_out_ovpn {
+  if site_out() then {
+    accept;
+    bgp_local_pref = 100;
+  }
+}
+
+filter site_out_l2tp {
+  if site_out() then {
+    bgp_local_pref = 10000;
+    accept;
+  }
+}
 
 template bgp ibgp_site from generic_bgp {
   import filter site_in;
-  export filter site_out;
-};
+}
 
 {% for site in sites %}
 {% if site.bgp is defined %}
 {% if openvpn is defined %}
 protocol bgp {{ site.bgp.name }}_ovpn from ibgp_site {
-  neighbor {{ openvpn.ipv4.server_net | ipaddr('net') | ipaddr(site.id) | ipaddr('address') }} as {{ own_as }};
-  default bgp_med 10;
-};
+  neighbor {{ openvpn.ipv4.server_net | ipaddr(site.id) | ipaddr('address') }} as {{ own_as }};
+  export filter site_out_ovpn;
+}
 {% endif %}
 
 {% if tunneldigger is defined %}
 protocol bgp {{ site.bgp.name }}_l2tp from ibgp_site {
   neighbor {{ tunneldigger.ipv4.server_net | ipsubnet(24, site.id) | ipaddr(1) | ipaddr('address') }} as {{ own_as }};
-};
+  export filter site_out_l2tp;
+}
 {% endif %}
 
 {% endif %}

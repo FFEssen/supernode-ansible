@@ -6,6 +6,4 @@ if [ "$HOOK" = "session.up" ]; then
   ip addr add 100.72.{{ site.id }}.1/31 dev $DEV
   ip -6 addr add 2a03:2260:2007:90{{ site.id }}::2/64 dev $DEV
   ip link set $DEV up
-  ip route add default via 100.72.{{ site.id }}.0 table 42
-  ip -6 route add default via 2a03:2260:2007:90{{ site.id }}::1
 fi
