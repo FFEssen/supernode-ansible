@@ -1,0 +1,9 @@
+/var/log/openvpn.log {
+    size 10m
+    rotate 10
+    copytruncate
+    delaycompress
+    compress
+    notifempty
+    missingok
+}

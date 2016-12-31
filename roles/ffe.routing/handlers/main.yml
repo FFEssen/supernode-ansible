@@ -5,3 +5,6 @@
 
 - name: Reload bird6
   shell: birdc6 configure soft
+
+- name: Restart rsyslog
+  service: name=rsyslog state=restarted

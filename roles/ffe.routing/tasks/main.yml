@@ -65,3 +65,10 @@
   with_items:
     - bird
     - bird6
+
+- name: Ensure rsyslog config exists
+  copy: src=bird_rsyslog.conf dest=/etc/rsyslog.d/bird.conf mode=0644 owner=root
+  notify: Restart rsyslog
+
+- name: Ensure logrotate config exists
+  copy: src=bird_logrotate dest=/etc/logrotate.d/bird mode=0644 owner=root
