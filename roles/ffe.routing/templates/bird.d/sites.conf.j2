@@ -1,23 +1,42 @@
-filter site_in {
-  if DRAINED = 1 then reject;
+function site_in() {
+  if DRAINED = 1 then return false;
+
 {% for site_prefix in site_prefixes %}
-  if net ~ {{ site_prefix }} then accept;
+  if net ~ {{ site_prefix }} then return true;
 {% endfor %}
 
-  reject;
+  return false;
 }
 
 function site_out() {
-  if DRAINED = 1 then reject;
+  if DRAINED = 1 then return false;
 
   return is_default_route();
+}
+
+filter site_in_ovpn {
+  if site_in() then {
+    accept;
+  }
+
+  reject;
 }
 
 filter site_out_ovpn {
   if site_out() then {
     accept;
-    bgp_local_pref = 100;
   }
+
+  reject;
+}
+
+filter site_in_l2tp {
+  if site_in() then {
+    bgp_local_pref = 10000;
+    accept;
+  }
+
+  reject;
 }
 
 filter site_out_l2tp {
@@ -25,24 +44,24 @@ filter site_out_l2tp {
     bgp_local_pref = 10000;
     accept;
   }
-}
 
-template bgp ibgp_site from generic_bgp {
-  import filter site_in;
+  reject;
 }
 
 {% for site in sites %}
 {% if site.bgp is defined %}
 {% if openvpn is defined %}
-protocol bgp {{ site.bgp.name }}_ovpn from ibgp_site {
+protocol bgp {{ site.bgp.name }}_ovpn from generic_bgp {
   neighbor {{ openvpn.ipv4.server_net | ipaddr(site.id) | ipaddr('address') }} as {{ own_as }};
+  import filter site_in_ovpn;
   export filter site_out_ovpn;
 }
 {% endif %}
 
 {% if tunneldigger is defined %}
-protocol bgp {{ site.bgp.name }}_l2tp from ibgp_site {
+protocol bgp {{ site.bgp.name }}_l2tp from generic_bgp {
   neighbor {{ tunneldigger.ipv4.server_net | ipsubnet(24, site.id) | ipaddr(1) | ipaddr('address') }} as {{ own_as }};
+  import filter site_in_l2tp;
   export filter site_out_l2tp;
 }
 {% endif %}

@@ -1,28 +1,65 @@
-filter site_out {
-  if DRAINED = 1 then reject;
-  if is_default_route() then accept;
+function site_out() {
+  if DRAINED = 1 then return false;
+
+  return is_default_route();
+}
+
+function site_in() {
+  if DRAINED = 1 then return false;
+
+  return true;
+}
+
+filter site_in_l2tp {
+  if site_in() then {
+    bgp_local_pref = 10000;
+    accept;
+  }
 
   reject;
-};
+}
 
-template bgp ibgp_site from generic_bgp {
-  import all;
-  export filter site_out;
-};
+filter site_out_l2tp {
+  if site_out() then {
+    bgp_local_pref = 10000;
+    accept;
+  }
+
+  reject;
+}
+
+filter site_in_ovpn {
+  if site_in() then {
+    accept;
+  }
+
+  reject;
+}
+
+filter site_out_ovpn {
+  if site_out() then {
+    accept;
+  }
+
+  reject;
+}
 
 {% for site in sites %}
 {% if site.bgp is defined %}
 {% if openvpn is defined %}
-protocol bgp {{ site.bgp.name }}_ovpn from ibgp_site {
+protocol bgp {{ site.bgp.name }}_ovpn from generic_bgp {
   neighbor {{ openvpn.ipv6.server_net | ipaddr('net') | ipaddr(site.id) | ipaddr('address') }} as {{ own_as }};
-  default bgp_med 10;
-};
+  import filter site_in_ovpn;
+  export filter site_out_ovpn;
+}
 {% endif %}
 
 {% if tunneldigger is defined %}
-protocol bgp {{site.bgp.name}}_l2tp from ibgp_site {
+protocol bgp {{site.bgp.name}}_l2tp from generic_bgp {
   neighbor {{ tunneldigger.ipv6.server_net | ipsubnet(64, site.id) | ipaddr(2) | ipaddr('address') }} as {{ own_as }};
-};
+  import filter site_in_l2tp;
+  export filter site_out_l2tp;
+}
 {% endif %}
 
 {% endif %}
