@@ -4,6 +4,7 @@ function site_in() {
 {% for site_prefix in site_prefixes %}
   if net ~ {{ site_prefix }} then return true;
 {% endfor %}
+  if net ~ [ {{ site_mgmt_filter }} ] then return true;
 
   return false;
 }

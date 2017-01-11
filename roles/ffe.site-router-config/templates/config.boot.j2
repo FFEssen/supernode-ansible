@@ -104,6 +104,10 @@ policy {
             action permit
             prefix {{ prefix.ipv4 }}
         }
+        rule 20 {
+            action permit
+            prefix {{ site.mgmt.ipv4 }}
+        }
     }
     prefix-list6 sn-in-ipv6 {
         rule 10 {
@@ -198,6 +202,8 @@ protocols {
             remote-as 65406
         }
         network {{ prefix.ipv4 }} {
+        }
+        network {{ site.mgmt.ipv4 }} {
         }
         parameters {
             router-id 100.72.{{ site.id }}.1
