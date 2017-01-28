@@ -2,6 +2,7 @@
 - hosts: supernodes
   roles:
     - ffe.packages
+    - ffe.users
     - ffe.sysctl
     - ffe.tunnels
     - ffe.routing
