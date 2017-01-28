@@ -1,16 +1,12 @@
 ---
-- hosts: supernodes
+- hosts: map
   roles:
     - ffe.packages
     - ffe.sysctl
     - ffe.tunnels
     - ffe.routing
     - ffe.iptables
-    - ffe.openvpn
-    - { role: ffe.unbound, when: mesh_enabled }
-    - { role: ffe.ntpd, when: mesh_enabled }
     - { role: ffe.batman, when: mesh_enabled }
-    - { role: ffe.dhcpd, when: mesh_enabled }
     - { role: ffe.fastd, when: mesh_enabled }
     - ffe.node-exporter
     - ffe.bird_exporter

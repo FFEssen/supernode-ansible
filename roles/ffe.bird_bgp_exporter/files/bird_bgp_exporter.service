@@ -1,9 +1,0 @@
-[Unit]
-Description=Bird BGP Exporter
-
-[Service]
-User=bird
-ExecStart=/usr/local/bin/bird_bgp_exporter
-
-[Install]
-WantedBy=default.target

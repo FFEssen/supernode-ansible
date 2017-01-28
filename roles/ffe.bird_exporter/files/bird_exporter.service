@@ -1,0 +1,9 @@
+[Unit]
+Description=Bird Exporter
+
+[Service]
+User=bird
+ExecStart=/usr/local/bin/bird_exporter
+
+[Install]
+WantedBy=default.target
