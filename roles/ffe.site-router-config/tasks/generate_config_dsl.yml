@@ -4,7 +4,7 @@
   file: path={{ site_config_dir }}/{{ site.name }} state=directory mode=0755
 
 - name: Ensure boot.config of site {{ site.name }} is up to date
-  template: src=config.boot.j2 dest={{ site_config_dir }}/{{ site.name }}/config.boot mode=0644
+  template: src=config.boot.dsl.j2 dest={{ site_config_dir }}/{{ site.name }}/config.boot mode=0644
 
 - name: Ensure script dirs exists
   file: path={{ site_config_dir }}/{{ site.name }}/{{ dir }} mode=0755 state=directory

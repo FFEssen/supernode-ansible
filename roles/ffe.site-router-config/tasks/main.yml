@@ -1,5 +1,10 @@
 ---
 
-- include: generate_config.yml site={{ item }}
-  with_items: '{{ sites }}'
+- name: Generate dsl site configs
+  include: generate_config_dsl.yml site={{ item }}
+  with_items: '{{ dsl_sites }}'
   when: item.config_ansible is defined and item.config_ansible
+
+- name: Generate backbone site configs
+  include: generate_config_bb.yml site={{ item }}
+  with_items: '{{ bb_sites }}'

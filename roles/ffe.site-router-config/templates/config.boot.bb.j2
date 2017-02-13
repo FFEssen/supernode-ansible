@@ -1,0 +1,277 @@
+firewall {
+    all-ping enable
+    broadcast-ping disable
+    ipv6-receive-redirects disable
+    ipv6-src-route disable
+    ip-src-route disable
+    log-martians enable
+    receive-redirects disable
+    send-redirects enable
+    source-validation disable
+    syn-cookies enable
+}
+interfaces {
+    ethernet eth0 {
+        address {{ site.wireless_mgmt_ip }}
+        description Uplink
+        duplex auto
+        ip {
+            ospf {
+                dead-interval 40
+                hello-interval 10
+                priority 1
+                retransmit-interval 5
+                transmit-delay 1
+            }
+        }
+        speed auto
+        vif {{ 300 + site.id }} {
+            address 100.64.{{ site.id }}.1/31
+            description "Transfer Rathaus"
+        }
+    }
+    ethernet eth1 {
+        disable
+        duplex auto
+        speed auto
+    }
+    ethernet eth2 {
+        disable
+        duplex auto
+        speed auto
+    }
+    ethernet eth3 {
+        disable
+        duplex auto
+        speed auto
+    }
+    ethernet eth4 {
+        address 172.17.{{ site.id }}.1/24
+        description Management
+        duplex auto
+        speed auto
+        vif 42 {
+            address {{ site.client_net.ipv6 | ipaddr(1) }}
+            address {{ site.client_net.ipv4 | ipaddr(1) }}
+            description Freifunk
+        }
+    }
+{% if (site.model | default('')) == 'ER-X-SFP' %}
+    ethernet eth5 {
+        duplex auto
+        speed auto
+    }
+{% endif %}
+    loopback lo {
+        address 172.17.10.{{ site.id }}/32
+    }
+    switch switch0 {
+        mtu 1500
+    }
+}
+policy {
+    prefix-list upstream-in {
+        rule 10 {
+            action permit
+            prefix 0.0.0.0/0
+        }
+        rule 20 {
+            action permit
+            ge 24
+            le 24
+            prefix 172.16.0.0/16
+        }
+    }
+    prefix-list upstream-out {
+        rule 10 {
+            action permit
+            prefix 172.17.{{ site.id }}.0/24
+        }
+        rule 20 {
+            action permit
+            prefix {{ site.client_net.ipv4 }}
+        }
+    }
+}
+protocols {
+    bgp 4200000100 {
+        neighbor 172.17.10.0 {
+            nexthop-self
+            prefix-list {
+                export upstream-out
+                import upstream-in
+            }
+            remote-as 4200000100
+            soft-reconfiguration {
+                inbound
+            }
+            update-source 172.17.10.{{ site.id }}
+        }
+        network {{ site.client_net.ipv4 }} {
+        }
+        network 172.17.{{ site.id }}.0/24 {
+        }
+        parameters {
+            router-id 172.17.10.{{ site.id }}
+        }
+        redistribute {
+            connected {
+            }
+        }
+        timers {
+            holdtime 30
+            keepalive 10
+        }
+    }
+    ospf {
+        area 0 {
+            network 172.17.10.0/24
+            network 100.64.{{ site.id }}.0/31
+        }
+        parameters {
+            abr-type cisco
+            router-id 172.17.10.{{ site.id }}
+        }
+        passive-interface lo
+    }
+}
+service {
+    dhcp-server {
+        disabled false
+        hostfile-update disable
+        shared-network-name Freifunk {
+            authoritative disable
+            subnet {{ site.client_net.ipv4 }} {
+                default-router {{ site.client_net.ipv4 | ipaddr(1) | ipaddr('address') }}
+                dns-server 8.8.8.8
+                lease 3600
+                start {{ site.client_net.ipv4 | ipaddr(2) | ipaddr('address') }} {
+                    stop {{ site.client_net.ipv4 | ipaddr(-2) | ipaddr('address') }}
+                }
+            }
+        }
+        shared-network-name Management {
+            authoritative disable
+            subnet 172.17.{{ site.id }}.0/24 {
+                default-router 172.17.{{ site.id }}.1
+                dns-server 172.17.{{ site.id }}.1
+                lease 3600
+                start 172.17.{{ site.id }}.10 {
+                    stop 172.17.{{ site.id }}.254
+                }
+            }
+        }
+        use-dnsmasq disable
+    }
+    dns {
+        forwarding {
+            cache-size 10000
+            listen-on eth4
+            listen-on eth4.42
+            name-server 8.8.8.8
+        }
+    }
+    nat {
+    }
+    ssh {
+        port 22
+        protocol-version v2
+    }
+}
+system {
+    domain-name 8.8.8.8
+    host-name {{ site.name }}
+    login {
+        user dan_nrw {
+            authentication {
+                encrypted-password $6$7qdW.0y2UfUGMb$KrwQ7y9IRWdfX7pxq8tOF06u7D5o1GMk97Tmgtd8SdvqLmuvXSF8e1NJkuFO6euHW/9GQw./12iGpZFCb6j1V.
+                plaintext-password ""
+                public-keys dan {
+                    key AAAAB3NzaC1yc2EAAAADAQABAAACAQC/D9Ap19MxtlKqXmU7uRd7KvfN8oGEK7CMl/Og5a7BHqOh6Y0554DkWzTzuD2HNqGqhIhaFMQRLlC4IBLnwd03oNyUO4GtLDjSXsEGynryo0a+iCtXNbh6jT9VL6SBD8jCr0hJDuY9V0vdTimb9WXhzX7jm5rIuLvmYuJqasCirfORROL6lneGGW9O3r/uWPmYGZX4gnI883TinqJhtTNGZiRfhhR6EMc+n2m1IYDLR19ZesnX/V0IlzWIxmmNI6zOEu2HSjipfjwI3qIjz8SuktV5CjQ41U9nCd1g6V7cKqaV3V2YOucI8htYOUMa7wfURoUQCC7rMzV1MDYyufdQUGx4LaVdk7y/ooPXOY8NYyDeX9NAfcQHcg3kWZfBOJT6SotfqVX08EGQDM8NJIvzZ1YduC256zbsIIKLo0BG+tccMbxvxlRuFepxGSDh2k7sALbdFSR3WRK//9lZ/94ySgF/wj2dffp4Og2NAi8H+1rYdYTmeMIrAEq2Yg5xEJpveQCqg4wmTPS6MEN4fTPh9Ly2I9NIYmdnSoSdpEk8GTs7boWrpJNXU3D0fK5MyYMiBp6kYxubBLKxRmqvtatu+ocsMrVwBcSUBGclzEuEZJfYeGno5hUzqbdTPgqe9FfrIwr5Jm+mwNuriDq8QLjPveJpQRrE3vExokBMbLS/vw==
+                    type ssh-rsa
+                }
+                public-keys cardno:000603645228 {
+                    key AAAAB3NzaC1yc2EAAAADAQABAAABAQC9dBNX+7+NXX9TdaiP295HNgFyHiQM0BVbp9gXUXgHInY5NL1bqHwMgsyVfxY8GE8KOPJJUV2zzlp453fjZluG9ZIjOs6l1yxJGyomNuGuf0clwpUmUUWC8/e5Tg6rAj+Sa6HKlsE8qG7l87wBhmNNJLWA5hZ9ylQZiXuJ6ljOQPIeK4H+rVzH5VVtt+n0O6SL/UqMrqXE9GGT0cgBgA9p/Jbf4kqBBpdh2lP6XoJJEySb+mk7HOwXY6QmozZDqy2XHKQo8ZM55lZDOe7jcqYfsA5P+4OYKaEEgIGWTU3L5n2tUQf6yjS+z/8vzDbCk1QLkPW4VJGlldl+qL0VQIed
+                    type ssh-rsa
+                }
+            }
+            full-name "Daniel Czerwonk"
+            level admin
+        }
+        user do1ffe {
+            authentication {
+                encrypted-password $6$H3iSms/9QLem$Ib5kvNRYmz0RKlHHxJvKXTRoyRVnURc9sGC0FAVCONQu9PMb0/cei9k6UrBxUwOl5hhCn28AhHyQ61Vz4U/ZM1
+                plaintext-password ""
+                public-keys erik {
+                    key AAAAB3NzaC1yc2EAAAABJQAAAgEAmTIJCwanR7Lp4YYdcRrDQjMC96db/UEz7TNtvrdOHtH3Ag01zrn3EA8E1YGNWas6i/nznzCkrkd2IyR4qnwHlKdRuOeNO45TWjNFZb4ahRXRcuoEf8u6wArZtxXmNQfrcDonNrECmlIyU/DvMth419E1RY9Ss36T+G8hG0WLJJbTk8F0fF1LrXcyJKZnAcpY4EaYPj8Jydnnxl8BbU4gFYw5C7ZMvRV6yoQSjvuEQGj/cBeXmMOu6QGHbvWaWdcAq+K5sQXThgh2ebG183IvPtxQu1YPDJ+y+nSOKqqZIMYSm9QDigKgqX2pdUBG/99Vt14MDpo1gcLiLfxVDe1ghwbtWHMOPzeG79Kv2N3ZC1S/P8jXxER1qVwGhAbkO6gu+q1pfI5OvrqE23QiR/7U6f4e6vxiktlloCgwGYZmRTV8ZXaiakuPWWOfLiewp8Pn52nx3pv5NZ0XpqvZqScxnmsO9R901ZrZQQWGihw0Q+LGIGxwzwyrf6Jm7ZRliPjTaaBuig5Wj8kO9bAipMNB48k8Bw2OLSyRy6u2EfK2sIVT/ZXAs1fV9Szcu0DODPg9iCkTnTn6arfKa2D0jQImTC162nlkHgeUpk3UKgzHO8VFCb2K3gPMMQmlLuBfhauuJrav8MbdpJjZbefAYzdrKJwAAlMjJooPB1znLc+8TZU=
+                    type ssh-rsa
+                }
+            }
+            full-name "Erik Schauer"
+            level admin
+        }
+        user pberndro {
+            authentication {
+                encrypted-password $6$eho3KXIB.jiq$G4aujWqTA216TZPS3ZC0Yj5WaS57Pj.zcFOAyYwjbdRgTeyPxUCL3goHgqAcwSyi0f5lKNe1GSTaLYtRxoGpF0
+                plaintext-password ""
+                public-keys Philip {
+                    key AAAAB3NzaC1yc2EAAAADAQABAAABAQDRKiJ4igF0RYk4pGLfd4E0t8JAtB/KpaiWOLYJnY5lwg7bx70dDwKaHU55wIl9Zba6/tv2zZeAouzomt1ZRqqje8l4qQvTvop6wcINRvKp6O3S8Ns6NbJb2axrXwbtLqZTqggYD06NOVJkO3o+979KMafxJVgKQzqWhpFiCE4gPcMLJT3JIUL/px+EOubMhZ/dtTUvTV81exh+yK2i3gwAHYdgqyDEmrwun/bb2UQMPmnb+K7Sp+N2eIAUzd5ec1xDf2Rg07bcsm48P6lWUWud2glvdpX80DX3tdUr6x4TXWatx5f6jEqyaUStiukCrKrgHs6V2fGfR8N/4wk5JdOP
+                    type ssh-rsa
+                }
+            }
+            full-name "Philip Berndroth"
+            level admin
+        }
+        user procurvr {
+            authentication {
+                encrypted-password $6$P6j2dcmjcjj5cnC$ZvMRuTE0dCfMl3X.byVnfKRjREeizBm6tuaGltMGTevx5.mggUdcnN6dGq9zE6cnkq/CLci0pmgcouVIzLyze1
+                plaintext-password ""
+                public-keys jan@thinkpad {
+                    key AAAAB3NzaC1yc2EAAAADAQABAAABAQC3gweMOJv9dk/qn8ANkwvMK6nm9/4ykVAG4+CBcpJaGdiCkQAleJ2tcZmATI8M7zny437ZK+tjBAk+xztfa9QwSfpw+w+eyhuIZ/RBz8CZSbOAu2zFAmdqvt7aGn2swssu5dYrepjCwZ+nqTyZztmgRkovneTCN2yOWW7Q/+O8zaGBeY40i4/+wza/2YECr5vFZ3loh5A4dqioIJyocUYUbZAkxutWOTZWz2/1GPI7VDsonMJ2aMre27nkwj+RMSoWwQDovu3z2SeZuKY6UuBS7aBiX8C+NSO7VOOhTHq8B1FMtot56/3aBRdTxOui8QjAFqV4x7MefwKDh8wRzYoF
+                    type ssh-rsa
+                }
+            }
+            full-name "Jan Saure"
+            level admin
+        }
+    }
+    name-server 8.8.8.8
+    ntp {
+        server time1.google.com {
+        }
+        server time2.google.com {
+        }
+    }
+    package {
+        repository wheezy {
+            components "main contrib non-free"
+            distribution wheezy
+            password ""
+            url http://http.us.debian.org/debian
+            username ""
+        }
+        repository wheezy-security {
+            components main
+            distribution wheezy/updates
+            password ""
+            url http://security.debian.org
+            username ""
+        }
+    }
+    syslog {
+        global {
+            facility all {
+                level notice
+            }
+            facility protocols {
+                level debug
+            }
+        }
+    }
+    time-zone Europe/Berlin
+}
+
+
+/* Warning: Do not remove the following line. */
+/* === vyatta-config-version: "config-management@1:conntrack@1:cron@1:dhcp-relay@1:dhcp-server@4:firewall@5:ipsec@5:nat@3:qos@1:quagga@2:system@4:ubnt-pptp@1:ubnt-util@1:vrrp@1:webgui@1:webproxy@1:zone-policy@1" === */
+/* Release version: v1.9.0.4901118.160804.1131 */

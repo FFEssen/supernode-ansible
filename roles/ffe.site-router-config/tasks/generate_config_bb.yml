@@ -1,0 +1,7 @@
+---
+
+- name: Ensure output directory for site {{ site.name }} exists
+  file: path={{ site_config_dir }}/{{ site.name }} state=directory mode=0755
+
+- name: Ensure boot.config of site {{ site.name }} is up to date
+  template: src=config.boot.bb.j2 dest={{ site_config_dir }}/{{ site.name }}/config.boot mode=0644
