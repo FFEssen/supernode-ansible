@@ -2,32 +2,61 @@
 :INPUT ACCEPT [384919558:324473666993]
 :FORWARD ACCEPT [302056066:288614493772]
 :OUTPUT ACCEPT [799077077:380640909330]
+:DROP_INPUT - [0:0]
+:DROP_FORWARD - [0:0]
+:DROP_OUTPUT - [0:0]
+-A DROP_INPUT -m limit --limit 2/min -j LOG --log-prefix "iptables drop: CHAIN=INPUT " --log-level 4
+-A DROP_INPUT -j DROP
+
+-A DROP_FORWARD -m limit --limit 2/min -j LOG --log-prefix "iptables drop: CHAIN=FORWARD " --log-level 4
+-A DROP_FORWARD -j DROP
+
+-A DROP_OUTPUT -m limit --limit 2/min -j LOG --log-prefix "iptables drop: CHAIN=OUTPUT " --log-level 4
+-A DROP_OUTPUT -j DROP
 
 -A INPUT -i lo -j ACCEPT
+-A INPUT -i gre-+ -j ACCEPT
 
--A INPUT -s 10.0.0.0/8 -p udp -m udp --dport 10000 -m limit --limit 2/sec -j LOG --log-prefix "fastd over mesh: "
--A INPUT -s 10.0.0.0/8 -p udp -m udp --dport 10000 -j REJECT --reject-with icmp-admin-prohibited
--A FORWARD -s 10.0.0.0/8 -p udp -m udp --dport 10000 -m limit --limit 2/sec -j LOG --log-prefix "fastd over mesh: "
--A FORWARD -s 10.0.0.0/8 -p udp -m udp --dport 10000 -j REJECT --reject-with icmp-admin-prohibited
+-A INPUT -p tcp --dport 22 -j ACCEPT
 
-# drop invalid
--A FORWARD -m state --state INVALID -j DROP
+# drop bogon
+-A INPUT -p tcp -m tcp --tcp-flags SYN,FIN SYN,FIN -j DROP_INPUT
+-A INPUT -p tcp -m tcp --tcp-flags SYN,RST SYN,RST -j DROP_INPUT
 
-# drop bogus
--A INPUT -p tcp -m tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
--A INPUT -p tcp -m tcp --tcp-flags SYN,RST SYN,RST -j DROP
+# allow *_exporter only for prometheus
+-A INPUT -p tcp --dport 9100 ! -s {{monitoring_host_ip}} -j DROP_INPUT
+-A INPUT -p tcp --dport 9200 ! -s {{monitoring_host_ip}} -j DROP_INPUT
+
+# prevent fastd in fastd
+-A INPUT -s 10.0.0.0/8 -p udp -m udp --dport 10000 -j DROP_INPUT
+-A FORWARD -s 10.0.0.0/8 -p udp -m udp --dport 10000 -j DROP_FORWARD
+
+# drop packages to common attacked ports
+-A INPUT ! -i bat0 -p udp --dport 53 -j DROP_INPUT
+-A INPUT ! -i bat0 -p tcp --dport 53 -j DROP_INPUT
+-A INPUT ! -i bat0 -p udp --dport 123 -j DROP_INPUT
+-A INPUT -p tcp --dport 25 -j DROP_INPUT
+
+# drop invalid packets
+-A FORWARD -m conntrack --ctstate INVALID -j DROP_FORWARD
+
+# prevent client traffic forwarding for spoofed IP addresses 
+-A FORWARD -i bat0 -o t-+ ! -s 10.228.0.0/16 -j DROP_FORWARD
+
+# prevent client traffic forwarding for rfc1918
+-A FORWARD -o t-+ -d 192.168.0.0/16 -j DROP_FORWARD
+-A FORWARD -o t-+ -d 172.16.0.0/12 -j DROP_FORWARD
+-A FORWARD -o t-+ -d 10.0.0.0/8 -j DROP_FORWARD
+
+# prevent client traffic forwarding for rfc6598
+-A FORWARD -o t-+ -d 100.64.0.0/10 -j DROP_FORWARD
 
 # allow only nat ip and transfer net to enter tunnel
 -A OUTPUT -o t-+ -s 100.64.0.0/10 -d 100.64.0.0/10 -j ACCEPT
 {% if nat_ip is defined %}
 -A OUTPUT -o t-+ -s {{nat_ip}} -j ACCEPT
 {% endif %}
--A OUTPUT -o t-+ -j LOG --log-prefix "invalid packet to backbone"
--A OUTPUT -o t-+ -j DROP
-
-# allow only for prometheus
--A INPUT -p tcp --dport 9100 ! -s {{monitoring_host_ip}} -j DROP
--A INPUT -p tcp --dport 9200 ! -s {{monitoring_host_ip}} -j DROP
+-A OUTPUT -o t-+ -j DROP_OUTPUT
 
 COMMIT
 
@@ -36,7 +65,6 @@ COMMIT
 :INPUT ACCEPT [825577:59133072]
 :OUTPUT ACCEPT [139384:11006472]
 :POSTROUTING ACCEPT [138887:10983100]
-
 {% if nat_ip is defined %}
 -A POSTROUTING -o t-+ -j SNAT --to-source {{nat_ip}}
 {% endif %}
@@ -49,8 +77,6 @@ COMMIT
 :FORWARD ACCEPT [3:262]
 :OUTPUT ACCEPT [1104633:171538737]
 :POSTROUTING ACCEPT [1104635:171538947]
-
-# mss clamping
 -A POSTROUTING -o t-+ -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1360
 
 COMMIT

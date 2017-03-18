@@ -2,12 +2,9 @@
 
 - name: Configure iptables 
   template: src=iptables.rules.j2 dest=/etc/iptables.rules owner=root mode=0600
-
-- name: Reload iptables
-  shell: iptables-restore /etc/iptables.rules
+  notify: Reload iptables
 
 - name: Configure ip6tables
   template: src=ip6tables.rules.j2 dest=/etc/ip6tables.rules owner=root mode=0600
+  notify: Reload ip6tables
 
-- name: Reload ip6tables
-  shell: ip6tables-restore /etc/ip6tables.rules
