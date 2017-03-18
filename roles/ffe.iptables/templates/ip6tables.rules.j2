@@ -2,15 +2,46 @@
 :INPUT ACCEPT [2706:219372]
 :FORWARD ACCEPT [113805:93229278]
 :OUTPUT ACCEPT [2601:292066]
+:DROP_INPUT - [0:0]
+:DROP_FORWARD - [0:0]
+:DROP_OUTPUT - [0:0]
+-A DROP_INPUT -m limit --limit 2/min -j LOG --log-prefix "ip6tables drop: CHAIN=INPUT " --log-level 4
+-A DROP_INPUT -j DROP
+
+-A DROP_FORWARD -m limit --limit 2/min -j LOG --log-prefix "ip6tables drop: CHAIN=FORWARD " --log-level 4
+-A DROP_FORWARD -j DROP
 
 -A INPUT -i lo -j ACCEPT
 
--A INPUT -s 2a03:2260::/30 -p udp -m udp --dport 10000 -m limit --limit 2/sec -j LOG --log-prefix "fastd over mesh: "
--A INPUT -s 2a03:2260::/30 -p udp -m udp --dport 10000 -j REJECT --reject-with icmp6-adm-prohibited
--A FORWARD -s 2a03:2260::/30 -p udp -m udp --dport 10000 -m limit --limit 2/sec -j LOG --log-prefix "fastd over mesh: "
--A FORWARD -s 2a03:2260::/30 -p udp -m udp --dport 10000 -j REJECT --reject-with icmp6-adm-prohibited
+# drop bogon
+-A INPUT -p tcp -m tcp --tcp-flags SYN,FIN SYN,FIN -j DROP_INPUT
+-A INPUT -p tcp -m tcp --tcp-flags SYN,RST SYN,RST -j DROP_INPUT
 
-# drop invalid
-#-A FORWARD -m state --state INVALID -j DROP
+# drop packages to common attacked ports
+{% if mesh is defined %}
+-A INPUT ! -i bat0 -p udp --dport 53 -j DROP_INPUT
+-A INPUT ! -i bat0 -p tcp --dport 53 -j DROP_INPUT
+-A INPUT ! -i bat0 -p udp --dport 123 -j DROP_INPUT
+{% else %}
+-A INPUT -p udp --dport 53 -j DROP_INPUT
+-A INPUT -p tcp --dport 53 -j DROP_INPUT
+-A INPUT -p udp --dport 123 -j DROP_INPUT
+{% endif %}
+-A INPUT -p tcp --dport 25 -j DROP_INPUT
+
+{% if mesh is defined %}
+# prevent fastd in fastd
+-A INPUT -s  2a03:2260::/32 -p udp -m udp --dport 10000 -j DROP_INPUT
+-A FORWARD -s 2a03:2260::/32 -p udp -m udp --dport 10000 -j DROP_FORWARD
+
+# drop invalid packets
+-A FORWARD -i bat0 -m conntrack --ctstate INVALID -j DROP
+{% endif %}
+
+# bcp38
+-A FORWARD -i t-+ -d 2a03:2260::/32 -j ACCEPT
+-A FORWARD -o t-+ -s 2a03:2260::/32 -j ACCEPT
+-A FORWARD -o t-+ -j DROP_FORWARD
+-A FORWARD -i t-+ -j DROP_FORWARD
 
 COMMIT
