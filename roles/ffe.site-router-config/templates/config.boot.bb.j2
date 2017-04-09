@@ -12,7 +12,11 @@ firewall {
 }
 interfaces {
     ethernet eth0 {
+{% if site.wireless_mgmt_ip is defined %}
         address {{ site.wireless_mgmt_ip }}
+{% else %}
+        address 100.64.{{ site.id }}.1/31
+{% endif %}
         description Uplink
         duplex auto
         ip {
@@ -25,10 +29,12 @@ interfaces {
             }
         }
         speed auto
+{% if site.wireless_mgmt_ip is defined %}
         vif {{ 300 + site.id }} {
             address 100.64.{{ site.id }}.1/31
             description "Transfer Rathaus"
         }
+{% endif %}
     }
     ethernet eth1 {
         disable
