@@ -1,4 +1,4 @@
-function site_in() {
+function is_site_in() {
   if DRAINED = 1 then return false;
 
 {% for site_prefix in site_prefixes %}
@@ -9,30 +9,30 @@ function site_in() {
   return false;
 }
 
-function site_out() {
+function is_site_out() {
   if DRAINED = 1 then return false;
 
   return is_default_route();
 }
 
-filter site_in_ovpn {
-  if site_in() then {
+filter site_in_failsafe {
+  if is_site_in() then {
     accept;
   }
 
   reject;
 }
 
-filter site_out_ovpn {
-  if site_out() then {
+filter site_out_failsafe {
+  if is_site_out() then {
     accept;
   }
 
   reject;
 }
 
-filter site_in_l2tp {
-  if site_in() then {
+filter site_in {
+  if is_site_in() then {
     bgp_local_pref = 10000;
     accept;
   }
@@ -40,8 +40,8 @@ filter site_in_l2tp {
   reject;
 }
 
-filter site_out_l2tp {
-  if site_out() then {
+filter site_out {
+  if is_site_out() then {
     bgp_local_pref = 10000;
     accept;
   }
@@ -49,23 +49,30 @@ filter site_out_l2tp {
   reject;
 }
 
-{% for site in sites %}
+{% for site in dsl_sites %}
 {% if site.bgp is defined %}
 {% if openvpn is defined %}
 protocol bgp {{ site.bgp.name }}_ovpn from generic_bgp {
   neighbor {{ openvpn.ipv4.server_net | ipaddr(site.id) | ipaddr('address') }} as {{ own_as }};
-  import filter site_in_ovpn;
-  export filter site_out_ovpn;
+  import filter site_in_failsafe;
+  export filter site_out_failsafe;
 }
 {% endif %}
 
 {% if tunneldigger is defined %}
 protocol bgp {{ site.bgp.name }}_l2tp from generic_bgp {
   neighbor {{ tunneldigger.ipv4.server_net | ipsubnet(24, site.id) | ipaddr(1) | ipaddr('address') }} as {{ own_as }};
-  import filter site_in_l2tp;
-  export filter site_out_l2tp;
+  import filter site_in;
+  export filter site_out;
 }
 {% endif %}
 
+{% if site.tunnel | default('') == 'gre' %}
+protocol bgp {{ site.bgp.name }}_gre from generic_bgp {
+  neighbor {{ gre.ipv4.server_net | ipsubnet(31, site.id) | ipaddr(1) | ipaddr('address') }} as {{ own_as }};
+  import filter site_in;
+  export filter site_out;
+}
+{% endif %}
 {% endif %}
 {% endfor %}

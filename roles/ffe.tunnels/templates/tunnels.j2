@@ -18,7 +18,7 @@ iface {{tunnel.name}} inet static
     post-up batctl if add {{tunnel.name}}
 {% endif %}
 {% if tunnel.ipv6 is defined %}
-    post-up ip -6 addr add {{tunnel.ipv6.address}}/64 dev {{tunnel.name}}
+    post-up ip -6 addr add {{tunnel.ipv6.address}} dev {{tunnel.name}}
 {% endif %}
 
 {% endfor %}

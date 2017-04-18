@@ -31,7 +31,7 @@
 
 - template: src=bird.d/sites.conf.j2 dest={{bird_config_dir}}/bird.d/sites.conf owner=bird mode=0600
   notify: Reload bird
-  when: (openvpn is defined or l2tp is defined) and sites is defined
+  when: (openvpn is defined or l2tp is defined) and dsl_sites is defined
 
 - template: src=bird.d/ibgp.conf.j2 dest={{bird_config_dir}}/bird.d/ibgp.conf owner=bird mode=0600
   notify: Reload bird
@@ -50,7 +50,7 @@
 
 - template: src=bird6.d/sites.conf.j2 dest={{bird_config_dir}}/bird6.d/sites.conf owner=bird mode=0600
   notify: Reload bird6
-  when: (openvpn is defined or l2tp is defined) and sites is defined
+  when: (openvpn is defined or l2tp is defined) and dsl_sites is defined
 
 - template: src=bird6.d/ibgp.conf.j2 dest={{bird_config_dir}}/bird6.d/ibgp.conf owner=bird mode=0600
   notify: Reload bird6
