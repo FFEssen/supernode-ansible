@@ -19,7 +19,7 @@
 
 - name: Creating ccd files
   template: src=ccd.j2 dest={{openvpn_config_dir}}/ccd/{{item.name}} owner=root mode=0444
-  with_items: '{{sites}}'
+  with_items: '{{dsl_sites}}'
 
 - name: Configure openvpn server
   template: src=server.conf.j2 dest={{openvpn_config_dir}}/server.conf owner=root mode=0600

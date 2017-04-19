@@ -2,18 +2,12 @@
 ip rule add from 10.228.0.0/24 lookup main
 ip rule add to 10.228.0.0/24 lookup main
 
-{% for site in sites %}
+{% for site in dsl_sites %}
 {% if site.bgp is not defined %}
 {% for prefix in  site.prefixes %}
 ip route add {{prefix.ipv4}} dev tun0 table 42
-{% endfor %}
-{% endif %}
-{% endfor %}
-
-{% for site in sites %}
-{% if site.bgp is not defined %}
-{% for prefix in  site.prefixes %}
 ip -6 route add {{prefix.ipv6}} dev tun0 table 42
+
 {% endfor %}
 {% endif %}
 {% endfor %}
