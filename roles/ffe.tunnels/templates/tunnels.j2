@@ -3,8 +3,8 @@
 
 auto {{tunnel.name}}
 iface {{tunnel.name}} inet static
-    address {{tunnel.ipv4.address}}
-    netmask 31
+    address {{tunnel.ipv4.address | ipaddr('address') }}
+    netmask {{tunnel.ipv4.address | ipaddr('prefix') }}
     mtu 1400
 {% if tunnel.protocol == 'gre' %}
     pre-up modprobe ip_gre
