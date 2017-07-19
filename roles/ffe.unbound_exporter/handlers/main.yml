@@ -1,0 +1,7 @@
+---
+
+- name: Reload systemd
+  shell: systemctl daemon-reload
+
+- name: Restart unbound_exporter
+  service: name=unbound_exporter state=restarted

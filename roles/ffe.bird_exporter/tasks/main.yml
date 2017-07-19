@@ -1,12 +1,9 @@
 ---
 
-- name: Ensure go is installed
-  apt: name=golang state=installed
-
 - name: Ensure bird exporter is installed 
   environment:
     GOPATH: /usr/local
-  shell: go get github.com/czerwonk/bird_exporter
+  shell: /usr/local/go/bin/go get github.com/czerwonk/bird_exporter
   notify: Restart bird_exporter
   
 - name: Ensure service is installed

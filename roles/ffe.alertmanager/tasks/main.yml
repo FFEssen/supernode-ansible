@@ -6,11 +6,8 @@
 - name: Ensure data dir exists
   file: name=/var/prometheus state=directory owner=prometheus mode=0700
 
-- name: Ensure go is installed
-  apt: name=golang state=present update_cache=yes
-
 - name: Install newest version of alertmanager
-  shell: go get github.com/prometheus/alertmanager
+  shell: /usr/local/go/bin/go get github.com/prometheus/alertmanager
   environment: 
     GOPATH: /usr/local
     GO15VENDOREXPERIMENT: 1

@@ -15,3 +15,4 @@
     - { role: ffe.fastd, when: mesh_enabled }
     - ffe.node-exporter
     - ffe.bird_exporter
+    - { role: ffe.unbound_exporter, when: mesh_enabled }

@@ -26,6 +26,7 @@
 # allow *_exporter only for prometheus
 -A INPUT -p tcp --dport 9100 ! -s {{monitoring_host_ip}} -j DROP_INPUT
 -A INPUT -p tcp --dport 9200 ! -s {{monitoring_host_ip}} -j DROP_INPUT
+-A INPUT -p tcp --dport 9167 ! -s {{monitoring_host_ip}} -j DROP_INPUT
 
 {% if mesh is defined %}
 # prevent fastd in fastd
