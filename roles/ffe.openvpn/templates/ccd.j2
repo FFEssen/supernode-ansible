@@ -4,5 +4,7 @@ ifconfig-ipv6-push {{ openvpn.ipv6.server_net | ipaddr('net') | ipaddr(item.id) 
 iroute {{ prefix.ipv4 | regex_replace('/.*$', '') }} {{ prefix.ipv4 | ipaddr('netmask') }}
 {% endfor %}
 {% for prefix in item.prefixes %}
+{% if prefix.ipv6 is defined %}
 iroute-ipv6 {{prefix.ipv6}}
+{% endif %}
 {% endfor %}
