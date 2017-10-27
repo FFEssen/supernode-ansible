@@ -8,3 +8,6 @@ iroute {{ prefix.ipv4 | regex_replace('/.*$', '') }} {{ prefix.ipv4 | ipaddr('ne
 iroute-ipv6 {{prefix.ipv6}}
 {% endif %}
 {% endfor %}
+{% if item.mgmt is defined %}
+iroute {{ item.mgmt.ipv4 | regex_replace('/.*$', '') }} {{ item.mgmt.ipv4 | ipaddr('netmask') }}
+{% endif %}

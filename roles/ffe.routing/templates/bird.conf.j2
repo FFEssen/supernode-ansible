@@ -10,7 +10,12 @@ protocol direct {
 protocol kernel {
   device routes;
   import all;
-  export all;
+  export filter {
+    if net = 0.0.0.0/0 then {
+      krt_prefsrc = {{ nat_ip }};
+    }
+    accept;
+  };
   kernel table 42;
 };
 
