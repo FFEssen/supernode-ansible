@@ -28,5 +28,11 @@ protocol static {
   route 0.0.0.0/0 unreachable;
 };
 
+protocol static static_custom {
+{% for r in host_custom_routes.ipv4 | default([]) %}
+  route {{ r }};
+{% endfor %}
+}
+
 include "/etc/bird/bgp.conf";
 include "/etc/bird/bird.d/*.conf";

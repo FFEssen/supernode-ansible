@@ -24,11 +24,12 @@ protocol static {
 };
 
 protocol static {
-{% if ipv6.prefixes is defined %}
-{% for item in ipv6.prefixes %}
+{% for item in ipv6.prefixes | default([]) %}
   route {{ item.prefix }} via "lo";
 {% endfor %}
-{% endif %}
+{% for r in host_custom_routes.ipv6 | default([]) %}
+  route {{ r }};
+{% endfor %}
 };
 
 include "/etc/bird/bgp.conf";
