@@ -1,6 +1,12 @@
 firewall {
     all-ping enable
     broadcast-ping disable
+    group {
+        network-group No-NAT {
+            network 224.0.0.0/8
+            network 100.64.{{ site.id }}.0/31
+        }
+    }
     ipv6-receive-redirects disable
     ipv6-src-route disable
     ip-src-route disable
@@ -37,21 +43,6 @@ interfaces {
 {% endif %}
     }
     ethernet eth1 {
-        disable
-        duplex auto
-        speed auto
-    }
-    ethernet eth2 {
-        disable
-        duplex auto
-        speed auto
-    }
-    ethernet eth3 {
-        disable
-        duplex auto
-        speed auto
-    }
-    ethernet eth4 {
         address 172.17.{{ site.id }}.1/24
         description Management
         duplex auto
@@ -62,11 +53,28 @@ interfaces {
             description Freifunk
         }
     }
+    ethernet eth2 {
+        disable
+        duplex auto
+        speed auto
+    }
+{% if (site.model | default('')) | match('ER-X.*') %}
+    ethernet eth3 {
+        disable
+        duplex auto
+        speed auto
+    }
+    ethernet eth4 {
+        disable
+        duplex auto
+        speed auto
+    }
 {% if (site.model | default('')) == 'ER-X-SFP' %}
     ethernet eth5 {
         duplex auto
         speed auto
     }
+{% endif %}
 {% endif %}
     loopback lo {
         address 172.17.10.{{ site.id }}/32
@@ -172,12 +180,40 @@ service {
     dns {
         forwarding {
             cache-size 10000
-            listen-on eth4
-            listen-on eth4.42
+            listen-on eth1
+            listen-on eth1.42
             name-server 8.8.8.8
         }
     }
     nat {
+        rule 5000 {
+            destination {
+                group {
+                    network-group !No-NAT
+                }
+            }
+            outbound-interface eth0
+            outside-address {
+                address 172.17.10.{{ site.id }}
+            }
+            source {
+                address 100.64.{{ site.id }}.1
+            }
+            type source
+        }
+    }
+    snmp {
+        community ffe {
+            authorization ro
+            client 172.16.0.1
+            client 172.16.0.6
+            network 172.16.0.0/16
+        }
+        contact noc@freifunk-essen.de
+        listen-address 172.17.10.{{ site.id }} {
+            port 161
+        }
+        location {{ site.name }}
     }
     ssh {
         port 22
@@ -196,8 +232,8 @@ system {
                     key AAAAB3NzaC1yc2EAAAADAQABAAACAQC/D9Ap19MxtlKqXmU7uRd7KvfN8oGEK7CMl/Og5a7BHqOh6Y0554DkWzTzuD2HNqGqhIhaFMQRLlC4IBLnwd03oNyUO4GtLDjSXsEGynryo0a+iCtXNbh6jT9VL6SBD8jCr0hJDuY9V0vdTimb9WXhzX7jm5rIuLvmYuJqasCirfORROL6lneGGW9O3r/uWPmYGZX4gnI883TinqJhtTNGZiRfhhR6EMc+n2m1IYDLR19ZesnX/V0IlzWIxmmNI6zOEu2HSjipfjwI3qIjz8SuktV5CjQ41U9nCd1g6V7cKqaV3V2YOucI8htYOUMa7wfURoUQCC7rMzV1MDYyufdQUGx4LaVdk7y/ooPXOY8NYyDeX9NAfcQHcg3kWZfBOJT6SotfqVX08EGQDM8NJIvzZ1YduC256zbsIIKLo0BG+tccMbxvxlRuFepxGSDh2k7sALbdFSR3WRK//9lZ/94ySgF/wj2dffp4Og2NAi8H+1rYdYTmeMIrAEq2Yg5xEJpveQCqg4wmTPS6MEN4fTPh9Ly2I9NIYmdnSoSdpEk8GTs7boWrpJNXU3D0fK5MyYMiBp6kYxubBLKxRmqvtatu+ocsMrVwBcSUBGclzEuEZJfYeGno5hUzqbdTPgqe9FfrIwr5Jm+mwNuriDq8QLjPveJpQRrE3vExokBMbLS/vw==
                     type ssh-rsa
                 }
-                public-keys cardno:000603645228 {
-                    key AAAAB3NzaC1yc2EAAAADAQABAAABAQC9dBNX+7+NXX9TdaiP295HNgFyHiQM0BVbp9gXUXgHInY5NL1bqHwMgsyVfxY8GE8KOPJJUV2zzlp453fjZluG9ZIjOs6l1yxJGyomNuGuf0clwpUmUUWC8/e5Tg6rAj+Sa6HKlsE8qG7l87wBhmNNJLWA5hZ9ylQZiXuJ6ljOQPIeK4H+rVzH5VVtt+n0O6SL/UqMrqXE9GGT0cgBgA9p/Jbf4kqBBpdh2lP6XoJJEySb+mk7HOwXY6QmozZDqy2XHKQo8ZM55lZDOe7jcqYfsA5P+4OYKaEEgIGWTU3L5n2tUQf6yjS+z/8vzDbCk1QLkPW4VJGlldl+qL0VQIed
+                public-keys yubikey4 {
+                    key AAAAB3NzaC1yc2EAAAADAQABAAACAQDpW6yKuzk4WVkNrVXkdczcBYSbljtq9eUSORMSTQIvY+XedNxBDLRUeGAahojDKWZBIXPm0xJ6e0RqaTFAwSmkWK6X1rFBQYGuK8+4trt+GOroYp9joYN0KFihHHKMgubPEIvU85x0ZbpbHUiioDvt0rZy9YJJ0L2UHNP/L07+0d0s5s33mpkeUUsGei1xvu9nyzyAq7YDm+UssqQaiTHH7dYxhXGSdd3jgKjZjYNDXuIARLPdsjwEulT8wYHgSu239zvCcJRXEb4mgDe6wk9oFOUBC9X7emTjbkQQKwmHnTWNaHRzEwgDkgFTYbsLhVnYy6aa4cMlQ7peCcGVVwcGKSUCdr7Zjq+mxhgFKGM3z8sPXCHWP4krQNfrJJgzyw4IgZsrp91hdEQmQjMYDmJRLYloLnClm4qQzThRxg6giLAHVNvoswoUtlTqTP252yS+yRKo7ioYkVYF50jZSbRuRFNZ4QbHL4jTLCOpPgFM4u5zZZqChTSJzOV7zd9+LPUTt9kfEfI0jXGbAQ1+X9mhE5+Uw0ZY/d1FVq6BxbPVhymaPSM+wYjhzkGuSkfvaknb/tcJ9+6QlKUVyioxIm5dgpMrrdquMwoVqOFC4Bc7uP9e0ryRw4Uo8isdLW5omXWVqPjrvXw/t3r7815dvz/NREEwlAI4TSy2nnHKKqPJCQ== 
                     type ssh-rsa
                 }
             }
