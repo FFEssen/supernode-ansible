@@ -79,9 +79,11 @@ interfaces {
     loopback lo {
         address 172.17.10.{{ site.id }}/32
     }
+{% if (site.model | default('')) | match('ER-X.*') %}
     switch switch0 {
         mtu 1500
     }
+{% endif %}
 }
 policy {
     prefix-list upstream-in {
