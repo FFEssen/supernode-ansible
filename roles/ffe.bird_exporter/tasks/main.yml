@@ -3,7 +3,7 @@
 - name: Ensure bird exporter is installed 
   environment:
     GOPATH: /usr/local
-  shell: /usr/local/go/bin/go get github.com/czerwonk/bird_exporter
+  shell: /usr/local/go/bin/go get -u github.com/czerwonk/bird_exporter
   notify: Restart bird_exporter
   
 - name: Ensure service is installed
