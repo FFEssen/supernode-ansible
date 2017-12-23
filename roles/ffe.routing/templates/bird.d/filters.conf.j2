@@ -1,10 +1,3 @@
-function is_own_prefix() {
-{% if nat_ip is defined %}
-  if net = {{ nat_ip }}/32 then return true;
-{% endif %}
-  return false;
-}
-
 function is_default_route() {
   return net = 0.0.0.0/0;
 }

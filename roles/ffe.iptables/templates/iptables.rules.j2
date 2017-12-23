@@ -64,10 +64,13 @@
 
 # allow only nat ip and transfer net to enter tunnel
 -A OUTPUT -o t-+ -s 100.64.0.0/10 -d 100.64.0.0/10 -j ACCEPT
+-A OUTPUT -o bb-+ -s 100.82.0.0/16 -d 100.82.0.0/16 -j ACCEPT
 {% if nat_ip is defined %}
--A OUTPUT -o t-+ -s {{nat_ip}} -j ACCEPT
+-A OUTPUT -o t-+ -s {{nat_ip.ffrl}} -j ACCEPT
+-A OUTPUT -o bb-+ -s {{nat_ip.ffe}} -j ACCEPT
 {% endif %}
 -A OUTPUT -o t-+ -j DROP_OUTPUT
+-A OUTPUT -o bb-+ -j DROP_OUTPUT
 
 COMMIT
 
@@ -77,7 +80,8 @@ COMMIT
 :OUTPUT ACCEPT [139384:11006472]
 :POSTROUTING ACCEPT [138887:10983100]
 {% if nat_ip is defined %}
--A POSTROUTING -o t-+ -j SNAT --to-source {{nat_ip}}
+-A POSTROUTING -o t-+ -j SNAT --to-source {{nat_ip.ffrl}}
+-A POSTROUTING -o bb-+ -j SNAT --to-source {{nat_ip.ffe}}
 {% endif %}
 
 COMMIT
@@ -89,5 +93,6 @@ COMMIT
 :OUTPUT ACCEPT [1104633:171538737]
 :POSTROUTING ACCEPT [1104635:171538947]
 -A POSTROUTING -o t-+ -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1360
+-A POSTROUTING -o bb-+ -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1360
 
 COMMIT

@@ -9,17 +9,26 @@ filter upstream_in {
   reject;
 };
 
-filter upstream_out {
+{% if nat_ip is defined %}
+filter ffe_out {
   if DRAINED = 1 then reject;
-  if is_own_prefix() then accept;
+  if net = {{ nat_ip.ffe }}/32 then accept;
 
   reject;
 };
 
+filter ffrl_out {
+  if DRAINED = 1 then reject;
+  if net = {{ nat_ip.ffrl }}/32 then accept;
+
+  reject;
+};
+
+{% endif %}
 template bgp upstream from generic_bgp {
   local as {{ own_as }};
   import filter upstream_in;
-  export filter upstream_out;
+  export filter drain;
 };
 
 {% if upstream.peers is defined %}
@@ -30,6 +39,8 @@ protocol bgp {{ peer.name }} from upstream {
   source address {{ peer.ipv4.source }};
 {% endif %}
   neighbor {{ peer.ipv4.neighbor }} as {{ peer.as }};
+  export filter {{ peers[peer.as].export_filter }};
+  default bgp_med {{ peers[peer.as].default_med | default(0) }};
 };
 
 {% endif %}
