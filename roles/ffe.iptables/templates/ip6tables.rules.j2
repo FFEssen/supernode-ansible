@@ -34,8 +34,6 @@
 -A INPUT -s  2a03:2260::/32 -p udp -m udp --dport 10000 -j DROP_INPUT
 -A FORWARD -s 2a03:2260::/32 -p udp -m udp --dport 10000 -j DROP_FORWARD
 
-# drop invalid packets
--A FORWARD -i bat0 -m conntrack --ctstate INVALID -j DROP
 {% endif %}
 
 # bcp38
