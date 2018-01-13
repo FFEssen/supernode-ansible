@@ -30,15 +30,15 @@
 
 {% if mesh is defined %}
 # prevent fastd in fastd
--A INPUT -s 10.0.0.0/8 -p udp -m udp --dport 10000 -j DROP_INPUT
--A FORWARD -s 10.0.0.0/8 -p udp -m udp --dport 10000 -j DROP_FORWARD
+-A INPUT -s 10.0.0.0/8 -p udp -m udp --dport 10000:10001 -j DROP_INPUT
+-A FORWARD -s 10.0.0.0/8 -p udp -m udp --dport 10000:10001 -j DROP_FORWARD
 {% endif %}
 
 # drop packages to common attacked ports
 {% if mesh is defined %}
--A INPUT ! -i bat0 -p udp --dport 53 -j DROP_INPUT
--A INPUT ! -i bat0 -p tcp --dport 53 -j DROP_INPUT
--A INPUT ! -i bat0 -p udp --dport 123 -j DROP_INPUT
+-A INPUT ! -i bat+ -p udp --dport 53 -j DROP_INPUT
+-A INPUT ! -i bat+ -p tcp --dport 53 -j DROP_INPUT
+-A INPUT ! -i bat+ -p udp --dport 123 -j DROP_INPUT
 {% else %}
 -A INPUT -p udp --dport 53 -j DROP_INPUT
 -A INPUT -p tcp --dport 53 -j DROP_INPUT
@@ -51,7 +51,7 @@
 
 {% if mesh is defined %}
 # prevent client traffic forwarding for spoofed IP addresses 
--A FORWARD -i bat0 -o t-+ ! -s 10.228.0.0/16 -j DROP_FORWARD
+-A FORWARD -i bat+ -o t-+ ! -s 10.228.0.0/16 -j DROP_FORWARD
 {% endif %}
 
 # prevent client traffic forwarding for rfc1918
