@@ -4,6 +4,7 @@
   with_items:
     - tmux 
     - zsh
+    - git
     - mc
     - htop
     - iftop

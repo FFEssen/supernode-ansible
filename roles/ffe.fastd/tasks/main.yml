@@ -1,4 +1,8 @@
 ---
+
+- name: Ensure fastd is installed
+  apt: name=fastd state=present
+
 - name: Ensure fastd config dir exists
   file: name={{fastd_config_dir}} state=directory owner=fastd mode=0500
 
@@ -30,3 +34,6 @@
   
 - name: Ensure logrotate is configured
   copy: src=fastd_logrotate dest=/etc/logrotate.d/fastd mode=0644 owner=root
+
+- name: Ensure service is enabled
+  service: name=fastd enabled=yes
