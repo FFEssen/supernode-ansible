@@ -72,11 +72,11 @@ interfaces {
         description Management-VPN
     }
     openvpn vtun1 {
-        config-file /config/openvpn.sn-a.ov.lil.conf
+        config-file /config/openvpn.sn-a.hz.nue.conf
         description sn-a.ov.lil
     }
     openvpn vtun2 {
-        config-file /config/openvpn.sn-b.ov.lil.conf
+        config-file /config/openvpn.sn-b.hz.nue.conf
         description sn-b.ov.lil
     }
     openvpn vtun3 {
@@ -211,11 +211,11 @@ protocols {
     }
 {% if site.gateway is defined %}
     static {
-        route 151.80.64.184/32 {
+        route 195.201.36.184/32 {
             next-hop {{ site.gateway }} {
             }
         }
-        route 151.80.64.185/32 {
+        route 195.201.95.199/32 {
             next-hop {{ site.gateway }} {
             }
         }
@@ -227,11 +227,11 @@ protocols {
             next-hop {{ site.gateway }} {
             }
         }
-        route 185.66.195.248/32 {
+        route 94.130.183.96/32 {
             next-hop {{ site.gateway }} {
             }
         }
-        route 185.66.195.249/32 {
+        route 185.65.240.123/32 {
             next-hop {{ site.gateway }} {
             }
         }
