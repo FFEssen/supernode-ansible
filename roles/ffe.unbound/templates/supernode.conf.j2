@@ -17,5 +17,6 @@ local-data: "1.updates.services.ffe. AAAA 2a03:2260:1005::16"
 
 forward-zone:
   name: .
-  forward-addr: 151.80.64.190
-  forward-addr: 37.235.1.174
+{% for dns in dns.servers | default %}
+  forward-addr: {{ dns }}
+{% endfor %}

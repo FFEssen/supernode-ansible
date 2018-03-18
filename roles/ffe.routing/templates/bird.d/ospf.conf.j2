@@ -8,7 +8,7 @@ filter ospf_in {
 {% endif %}
 
   reject;
-};
+}
 
 filter ospf_out {
   if DRAINED = 1 then reject;
@@ -17,19 +17,25 @@ filter ospf_out {
 {% endif %}
 
   reject;
-};
+}
 
 protocol kernel kernel_ospf {
   table OSPF;
   import none;
   export filter ospf_in;
   kernel table 254;
-};
+}
+
+protocol pipe ospf_pipe {
+  table OSPF;
+  peer table master;
+  export filter ospf_in; 
+}
 
 protocol direct direct_ospf {
   table OSPF;
   interface "lo";
-};
+}
 
 protocol ospf {
   table OSPF;
@@ -45,4 +51,4 @@ protocol ospf {
       stub yes;
     };
   };
-};
+}

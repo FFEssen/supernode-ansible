@@ -3,6 +3,9 @@
 - name: Ensure fastd is installed
   apt: name=fastd state=present
 
+- name: Ensure user exists
+  user: name=fastd system=yes
+
 - name: Ensure fastd config dir exists
   file: name={{fastd_config_dir}} state=directory owner=fastd mode=0500
 

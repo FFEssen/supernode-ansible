@@ -9,26 +9,26 @@ filter ibgp_in {
   }
 
   reject;
-};
+}
 
 filter ibgp_out {
   if DRAINED = 1 then reject;
   if is_default_route() then accept;
 
   reject;
-};
+}
 
 template bgp ibgp from generic_bgp {
   import filter ibgp_in;
   export filter ibgp_out;
   source address {{ intern_net6 | ipaddr(id) | ipaddr('address') }};
-};
+}
 
 {% for h in groups['supernodes'] %}
 {% if hostvars[h].ibgp_name is defined and hostvars[h].id != id %}
 protocol bgp {{ hostvars[h].ibgp_name }} from ibgp {
   neighbor {{ intern_net6 | ipaddr(hostvars[h].id) | ipaddr('address') }} as {{ own_as }};
-};
+}
 
 {% endif %}
 {% endfor %}

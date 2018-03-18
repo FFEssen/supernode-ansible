@@ -6,19 +6,19 @@ filter upstream_in {
   }
 
   reject;
-};
+}
 
 filter upstream_out {
   if DRAINED = 1 then reject;
   if is_own_prefix() then accept;
 
   reject;
-};
+}
 
 template bgp upstream from generic_bgp {
   import filter upstream_in;
   export filter upstream_out;
-};
+}
 
 {% if upstream.peers is defined %}
 {% for peer in upstream.peers %}
@@ -28,7 +28,7 @@ protocol bgp {{ peer.name }} from upstream {
   source address {{ peer.ipv6.source }};
 {% endif %}
   neighbor {{ peer.ipv6.neighbor }} as {{ peer.as }};
-};
+}
 
 {% endif %}
 {% endfor %}
