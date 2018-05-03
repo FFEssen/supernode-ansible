@@ -1,11 +1,21 @@
+function is_site_prefix() {
+{% for p in ipv6.prefixes | default([]) %}
+  if net ~ {{ p.prefix }}{56,64} then accept;
+{% endfor %}
+  return false; 
+}
+
 filter ibgp_in {
   if DRAINED = 1 then reject;
   
   if is_default_route() then {
-    if source = RTS_BGP then {
-      bgp_local_pref = 100;
-      accept;
-    }
+    bgp_local_pref = 100;
+    accept;
+  }
+
+  if is_site_prefix() then {
+    bgp_local_pref = 10;
+    accept;
   }
 
   reject;
@@ -13,7 +23,11 @@ filter ibgp_in {
 
 filter ibgp_out {
   if DRAINED = 1 then reject;
-  if is_default_route() then accept;
+
+  if source = RTS_BGP then {
+    if is_default_route() then accept;
+    if is_site_prefix() && SITE_COMMUNITY ~ bgp_large_community then accept;
+  }
 
   reject;
 }
@@ -22,6 +36,7 @@ template bgp ibgp from generic_bgp {
   import filter ibgp_in;
   export filter ibgp_out;
   source address {{ intern_net6 | ipaddr(id) | ipaddr('address') }};
+  rr client;
 }
 
 {% for h in groups['supernodes'] %}
