@@ -130,17 +130,6 @@ protocols {
                 }
             }
         }
-        neighbor 100.72.{{ site.id }}.0 {
-            nexthop-self
-            prefix-list {
-                export sn-out
-                import sn-in
-            }
-            remote-as 65406
-            soft-reconfiguration {
-                inbound
-            }
-        }
         neighbor 10.228.100.1 {
             nexthop-self
             prefix-list {
@@ -184,22 +173,6 @@ protocols {
             soft-reconfiguration {
                 inbound
             }
-        }
-        neighbor 2a03:2260:2007:90{{ site.id }}::1 {
-            address-family {
-                ipv6-unicast {
-                    nexthop-self
-                    prefix-list {
-                        export sn-out-ipv6
-                        import sn-in-ipv6
-                    }
-                    soft-reconfiguration {
-                        inbound
-                    }
-                }
-            }
-            description sn-b.ak.ber
-            remote-as 65406
         }
         network {{ prefix.ipv4 }} {
         }

@@ -1,5 +1,0 @@
-#!/bin/sh
-modprobe l2tp_core
-modprobe l2tp_netlink
-modprobe l2tp_eth
-nohup /config/bin/l2tp_client -u "ffe-site-{{ site.id }}" -i l2tp-ber-b -b sn-b.ak.ber.ffe.rocks:10050 -s /config/scripts/tunneldigger/hook.sh &

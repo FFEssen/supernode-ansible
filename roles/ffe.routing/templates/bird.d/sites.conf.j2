@@ -59,14 +59,6 @@ protocol bgp {{ site.bgp.name }}_ovpn from generic_bgp {
 }
 {% endif %}
 
-{% if tunneldigger is defined %}
-protocol bgp {{ site.bgp.name }}_l2tp from generic_bgp {
-  neighbor {{ tunneldigger.ipv4.server_net | ipsubnet(24, site.id) | ipaddr(1) | ipaddr('address') }} as {{ own_as }};
-  import filter site_in;
-  export filter site_out;
-}
-{% endif %}
-
 {% if site.tunnel | default('') == 'gre' %}
 protocol bgp {{ site.bgp.name }}_gre from generic_bgp {
   neighbor {{ gre.ipv4.server_net | ipsubnet(31, site.id) | ipaddr(1) | ipaddr('address') }} as {{ own_as }};
