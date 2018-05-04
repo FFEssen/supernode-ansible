@@ -1,6 +1,6 @@
 function is_site_prefix() {
 {% for p in ipv6.prefixes | default([]) %}
-  if net ~ {{ p.prefix }}{56,64} then accept;
+  if net ~ [ {{ p.prefix }}{56,64} ] then accept;
 {% endfor %}
   return false; 
 }
