@@ -24,9 +24,13 @@ filter ibgp_in {
 filter ibgp_out {
   if DRAINED = 1 then reject;
 
-  if source = RTS_BGP then {
-    if is_default_route() then accept;
-    if is_site_prefix() && SITE_COMMUNITY ~ bgp_large_community then accept;
+  if source = RTS_BGP && is_default_route() then accept;
+  if is_site_prefix() then {
+    if SITE_COMMUNITY ~ bgp_large_community then {
+      bgp_local_pref = 1000;
+    }
+
+    accept;
   }
 
   reject;
