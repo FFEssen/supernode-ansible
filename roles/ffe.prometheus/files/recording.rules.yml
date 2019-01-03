@@ -120,15 +120,24 @@ groups:
         kind: downstream
         site: dus
 
-    - record: node_bb:ingress:outside_sum_rate1m
-      expr: sum(node_bb:ingress:rate1m_by_peer{kind!="downstream"})
+    - record: node_bb:ingress:rate1m_by_peer
+      expr: irate(node_network_receive_bytes{job="node_bb",site="ix.fra",device="ens2f0"}[1m]) * 8
       labels:
-        site: dus
+        peer: INIT7
+        kind: transit
+        site: fra
+    - record: node_bb:egress:rate1m_by_peer
+      expr: irate(node_network_transmit_bytes{job="node_bb",site="ix.fra",device="ens2f0"}[1m]) * 8
+      labels:
+        peer: INIT7
+        kind: transit
+        site: fra
+
+    - record: node_bb:ingress:outside_sum_rate1m
+      expr: sum(node_bb:ingress:rate1m_by_peer{kind!="downstream"}) by (site)
 
     - record: node_bb:egress:outside_sum_rate1m
-      expr: sum(node_bb:egress:rate1m_by_peer{kind!="downstream"})
-      labels:
-        site: dus
+      expr: sum(node_bb:egress:rate1m_by_peer{kind!="downstream"}) by (site)
 
     - record: node:conntrack_usage_percent
       expr: (100 / node_nf_conntrack_entries_limit) * node_nf_conntrack_entries
