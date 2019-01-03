@@ -1,0 +1,25 @@
+---
+
+- targets:
+    - gw01.e-rathaus.dev.freifunk-essen.net
+    - gw01.e-esh.dev.freifunk-essen.net
+  labels:
+    job: snmp_city
+    site: City-Infra
+    scope: city_backbone
+
+- targets:
+    - gw01.e-zollverein.dev.freifunk-essen.net
+  labels:
+    job: snmp_city
+    site: FF-E-Zollverein
+    scope: city_backbone
+
+{% for site in bb_sites %}
+
+- targets: [ {{ site.hostname | default("gw01." + (site.name[3:] | lower) + ".dev.freifunk-essen.net") }} ]
+  labels:
+    job: snmp_city
+    site: {{ site.name }}
+    scope: city_backbone
+{% endfor %}

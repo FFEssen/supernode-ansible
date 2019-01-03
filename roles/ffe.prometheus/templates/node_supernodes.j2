@@ -1,0 +1,9 @@
+---
+{% for host in groups['supernodes'] %}
+
+- targets: [ {{ host }}:9100 ]
+  labels:
+    job: node_supernodes
+    site: {{ host | regex_replace('[^.]+\.(.*?)(\.de)?\.ff-e\.net$', '\\1') }}
+    scope: supernodes
+{% endfor %}

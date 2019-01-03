@@ -1,0 +1,9 @@
+---
+{% for host in groups['routers'] %}
+
+- targets: [ {{ host }}:9100 ]
+  labels:
+    job: node_bb
+    site: {{ host | regex_replace('[^.]+\.(.*?)(\.de)?\.ff-e\.net$', '\\1') }}
+    scope: backbone
+{% endfor %}

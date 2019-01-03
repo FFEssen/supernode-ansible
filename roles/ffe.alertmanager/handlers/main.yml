@@ -1,4 +1,4 @@
 ---
 
-- name: Restart alertmanager
-  service: name=alertmanager state=restarted
+- name: Reload alertmanager
+  shell: curl http://172.17.0.1:9093/-/reload -d ""

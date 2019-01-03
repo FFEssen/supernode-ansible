@@ -1,84 +1,59 @@
 global:
   scrape_interval:     15s # By default, scrape targets every 15 seconds.
   evaluation_interval: 15s # By default, scrape targets every 15 seconds.
-  # scrape_timeout is set to the global default (10s).
-
-  # Attach these labels to any time series or alerts when communicating with
-  # external systems (federation, remote storage, Alertmanager).
-  external_labels:
-    monitor: 'codelab-monitor'
 
 rule_files:
-  - /etc/prometheus/alerts.rules
+  - /etc/prometheus/alerts.rules.yml
+  - /etc/prometheus/recording.rules.yml
 
 scrape_configs:
-  - job_name: 'snmp_ffe'
+  - job_name: 'snmp'
     scrape_interval: 30s
     scrape_timeout: 30s
-    target_groups:
-      - targets: [
-                  'gw01.e-awo-jlh.dev.freifunk-essen.net', 
-                  'gw01.e-esh.dev.freifunk-essen.net', 
-                  'gw01.e-hatzp.dev.freifunk-essen.net',
-                  'gw01.e-mauve.dev.freifunk-essen.net',
-                  'gw01.e-volks.dev.freifunk-essen.net',
-                  'gw01.e-zollv.dev.freifunk-essen.net',
-                  'gw01.e-erbsl.dev.freifunk-essen.net',
-                  'gw01.e-boegel.dev.freifunk-essen.net',
-                  'gw01.e-heidb.dev.freifunk-essen.net',
-                  'gw01.e-hambu.dev.freifunk-essen.net',
-                  'gw01.e-gerha.dev.freifunk-essen.net'
-                 ]
+    file_sd_configs:
+      - files: 
+          - '/etc/prometheus/tgroups/snmp*.yml'
+    metrics_path: /snmp
     params:
-      module: [default]
+      module: [if_mib]
     relabel_configs:
       - source_labels: [__address__]
-        regex: (.*?)(:80)?
-        target_label: __param_address
-        replacement: ${1}
-      - source_labels: [__param_address]
-        regex: (.*)
+        target_label: __param_target
+      - source_labels: [__param_target]
         target_label: instance
-        replacement: ${1}
-      - source_labels: []
-        regex: .*
-        target_label: __address__
-        replacement: 127.0.0.1:9116
-
-  - job_name: 'snmp_ffrl'
-    scrape_interval: 60s
-    scrape_timeout: 30s
-    target_groups:
-      - targets: ['gw01.fah.dev.freifunk-essen.net',
-                  'gw01.stk-d.dev.freifunk-essen.net',
-                  'gw01.lanuv-e.dev.freifunk-essen.net']
-    params:
-      module: [default]
-    relabel_configs:
-      - source_labels: [__address__]
-        regex: (.*?)(:80)?
-        target_label: __param_address
-        replacement: ${1}
-      - source_labels: [__param_address]
-        regex: (.*)
-        target_label: instance
-        replacement: ${1}
-      - source_labels: []
-        regex: .*
-        target_label: __address__
-        replacement: 127.0.0.1:9116
+      - target_label: __address__
+        replacement: 172.17.0.1:9116
 
   - job_name: 'node'
     scrape_interval: 20s
-    target_groups:
-      - targets: ['sn-a.ak.ber.ffe.rocks:9100',
-                  'sn-b.ak.ber.ffe.rocks:9100',
-                  'sn-a.ov.lil.ffe.rocks:9100',
-                  'sn-b.ov.lil.ffe.rocks:9100',
-                  'map.ffe.rocks:9100',
-                  'vpn.ffe.rocks:9100']
+    file_sd_configs:
+      - files:
+        - '/etc/prometheus/tgroups/node*.yml'
+    relabel_configs:
+      - source_labels: [__address__]
+        regex:  '(.*)\.(de\.)?(ff-e\.net):\d+'
+        target_label: instance
+        replacement: '${1}'
+
+  - job_name: 'bird'
+    scrape_interval: 30s
+    file_sd_configs:
+      - files:
+        - '/etc/prometheus/tgroups/bird*.yml'
+    relabel_configs:
+      - source_labels: [__address__]
+        regex:  '(.*)\.(de\.)?(ff-e\.net):\d+'
+        target_label: instance
+        replacement: '${1}'
 
   - job_name: 'unifi'
     scrape_interval: 30s
-    target_groups:
-      - targets: ['localhost:9120']
+    static_configs:
+      - targets: ['172.16.0.6:9120']
+
+alerting:
+  alertmanagers:
+    - scheme: http
+      static_configs:
+        - targets:
+          - "172.17.0.1:9093"

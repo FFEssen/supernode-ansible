@@ -3,31 +3,40 @@
 - name: Ensure config dir exists
   file: name=/etc/prometheus state=directory owner=root mode=0755
 
-- name: Ensure target group dir exists
-  file: name=/etc/prometheus/tgroups state=directory owner=root mode=0755
-
 - name: Ensure data dir exists
-  file: name=/var/prometheus state=directory owner=prometheus mode=0700
+  file: name=/var/prometheus state=directory owner=nobody mode=0755
 
-- name: Install newest version of prometheus
-  shell: /usr/local/go/bin/go get github.com/prometheus/prometheus/cmd/prometheus
-  environment: 
-    GOPATH: /usr/local
-    GO15VENDOREXPERIMENT: 1
+- name: Ensure target group dir exists
+  file: name=/etc/prometheus/tgroups state=directory owner=nobody mode=0755
+
+- name: Configure prometheus
+  copy: src={{ item }} dest=/etc/prometheus owner=root mode=0644
+  with_items:
+    - prometheus.yml
+    - alerts.rules.yml
+    - recording.rules.yml
   notify: Restart prometheus
 
 - name: Configure prometheus
-  copy: src={{item}} dest=/etc/prometheus/{{item}} owner=root mode=0644
+  template: src={{ item }}.j2 dest=/etc/prometheus/tgroups/{{ item }}.yml owner=root mode=0644
   with_items:
-    - 'prometheus.yml'
-    - 'alerts.rules'
-  notify: Restart prometheus
+    - snmp_city
+    - node_bb
+    - node_supernodes
+    - bird_bb
+    - bird_supernodes
 
-- name: Install systemd unit
-  copy: src=prometheus.service dest=/lib/systemd/system/prometheus.service
+- name: Ensure docker container is running
+  docker_container:
+    name: prometheus
+    image: prom/prometheus
+    state: started
+    pull: true
+    volumes:
+      - "/var/prometheus:/prometheus"
+      - "/etc/prometheus:/etc/prometheus"
+    ports:
+      - "9090:9090"
+    restart_policy: always
+    command: "--web.external-url=https://{{ prometheus.fqdn }} --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --storage.tsdb.retention=90d --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles --web.enable-lifecycle"
 
-- name: Reload systemd
-  shell: systemctl daemon-reload
-
-- name: Start service
-  service: name=prometheus state=restarted enabled=yes

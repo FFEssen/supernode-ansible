@@ -1,0 +1,53 @@
+---
+
+groups:
+- name: alerts
+  rules:
+  - alert: HostDown
+    expr: up{job=~"node.*"} == 0
+    for: 15m
+    labels:
+      severity: page
+    annotations:
+      description: Host {{ $labels.instance }} is unreachable for more than 15 minutes
+      summary: Host {{ $labels.instance }} down
+  - alert: UpstreamDown
+    expr: bird_protocol_up{name=~"herms.*|lwlcom.*|init7.*"} == 0
+    for: 15m
+    labels:
+      severity: notify
+    annotations:
+      description: BGP session {{ $labels.name }} is down for more than 15 minutes
+      summary: Upstream session down on {{ $labels.instance }}
+  - alert: IXPDown
+    expr: bird_protocol_up{name=~"decix.*|ecix.*|community.*"} == 0
+    for: 15m
+    labels:
+      severity: notify
+    annotations:
+      description: BGP session {{ $labels.name }} is down for more than 15 minutes
+      summary: Route server session down on {{ $labels.instance }}
+  - alert: UpstreamDownCritical
+    expr: sum(bird_protocol_up{name=~"herms.*|lwlcom.*|init7.*"} == 0) by (instance, ip_version) > 1
+    for: 1m
+    labels:
+      severity: page
+    annotations:
+      description: "More than 1 upstream session for IPv{{ $labels.ip_version }} down for more than 1 minute"
+      summary: "Upstream sessions down on  {{ $labels.instance }} (IPv{{ $labels.ip_version }})"
+  - alert: DiscSpaceLow
+    expr: node_filesystem_avail{mountpoint="/"} / 2^20 < 500
+    for: 1m
+    labels:
+      severity: notify
+    annotations:
+      description: "Less than 500M available on /"
+      summary: "Disc space low on {{ $labels.instance }}"
+  - alert: DiscSpaceLowCritical
+    expr: node_filesystem_avail{mountpoint="/"} / 2^20 < 100
+    for: 1m
+    labels:
+      severity: page
+    annotations:
+      description: "Less than 100M available on /"
+      summary: "Disc space low on {{ $labels.instance }}"

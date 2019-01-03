@@ -1,27 +1,21 @@
 ---
 
 - name: Ensure config dir exists
-  file: name=/etc/prometheus state=directory owner=root mode=0755
+  file: name=/etc/alertmanager state=directory owner=root mode=0755
 
-- name: Ensure data dir exists
-  file: name=/var/prometheus state=directory owner=prometheus mode=0700
+- name: Ensure config is up to date
+  template: src=alertmanager.yml.j2 dest=/etc/alertmanager/alertmanager.yml owner=root mode=0644
+  notify: Reload alertmanager
 
-- name: Install newest version of alertmanager
-  shell: /usr/local/go/bin/go get github.com/prometheus/alertmanager
-  environment: 
-    GOPATH: /usr/local
-    GO15VENDOREXPERIMENT: 1
-  notify: Restart alertmanager
+- name: Ensure docker container is running
+  docker_container:
+    name: alertmanager
+    image: prom/alertmanager
+    state: started
+    pull: true
+    volumes:
+            - "/etc/alertmanager:/etc/alertmanager"
+    ports:
+      - "172.17.0.1:9093:9093"
+    restart_policy: always
 
-- name: Configure alertmanager
-  template: src=alertmanager.yml.j2 dest=/etc/prometheus/alertmanager.yml owner=root mode=0644
-  notify: Restart alertmanager
-
-- name: Install systemd unit
-  copy: src=alertmanager.service dest=/lib/systemd/system/alertmanager.service
-
-- name: Reload systemd
-  shell: systemctl daemon-reload
-
-- name: Start service
-  service: name=alertmanager state=restarted enabled=yes

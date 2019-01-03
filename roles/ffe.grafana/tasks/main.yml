@@ -1,0 +1,19 @@
+---
+
+- name: Ensure data dir exists
+  file: name=/var/grafana state=directory owner=472 mode=0755
+
+- name: Ensure docker container is running
+  docker_container:
+    name: grafana
+    image: grafana/grafana
+    state: started
+    pull: true
+    volumes:
+      - "/var/grafana:/var/lib/grafana"
+    ports:
+      - "127.0.0.1:3000:3000"
+    env:
+      GF_SERVER_ROOT_URL: "{{ grafana.fqdn }}"
+    restart_policy: always
+
