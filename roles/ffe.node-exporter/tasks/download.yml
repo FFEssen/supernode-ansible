@@ -7,4 +7,4 @@
   register: download
 
 - name: Move binary
-  copy: src=/tmp/node_exporter-{{ nodeexporter_version }}.linux-amd64/node_exporter dest=/usr/local/bin/node_exporter remote_src=yes
+  copy: src=/tmp/node_exporter-{{ nodeexporter_version }}.linux-amd64/node_exporter dest=/usr/local/bin/node_exporter remote_src=yes mode=755 owner=root
