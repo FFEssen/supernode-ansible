@@ -36,7 +36,7 @@ groups:
       description: "More than 1 upstream session for IPv{{ $labels.ip_version }} down for more than 1 minute"
       summary: "Upstream sessions down on  {{ $labels.instance }} (IPv{{ $labels.ip_version }})"
   - alert: DiskSpaceLow
-    expr: node_filesystem_avail{mountpoint="/"} / 2^20 < 500
+    expr: node_filesystem_avail_bytes{mountpoint="/"} / 2^20 < 500
     for: 1m
     labels:
       severity: notify
@@ -44,7 +44,7 @@ groups:
       description: "Less than 500M available on /"
       summary: "Disc space low on {{ $labels.instance }}"
   - alert: DiskSpaceLowCritical
-    expr: node_filesystem_avail{mountpoint="/"} / 2^20 < 100
+    expr: node_filesystem_avail_bytes{mountpoint="/"} / 2^20 < 100
     for: 1m
     labels:
       severity: page
