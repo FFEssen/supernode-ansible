@@ -1,6 +1,10 @@
 - name: Download and untar node-exporter
   unarchive: 
     src=https://github.com/prometheus/node_exporter/releases/download/v{{ nodeexporter_version }}/node_exporter-{{ nodeexporter_version }}.linux-amd64.tar.gz
-    dest=/usr/local/bin
+    dest=/tmp
     copy=no
-    creates=/usr/local/bin/node_exporter
+    creates="/tmp/node_exporter-{{ nodeexporter_version }}.linux-amd64/node_exporter"
+  register: download
+
+- name: Move binary
+  copy: src=/tmp/node_exporter-{{ nodeexporter_version }}.linux-amd64/node_exporter dest=/usr/local/bin/node_exporter remote_src=yes
