@@ -1,6 +1,6 @@
 - name: Download and untar node-exporter
   unarchive: 
-    src=https://github.com/prometheus/node_exporter/releases/download/{{nodeexporter_version}}/node_exporter-{{nodeexporter_version}}.linux-amd64.tar.gz                                                                                                                                                  
+    src=https://github.com/prometheus/node_exporter/releases/download/v{{ nodeexporter_version }}/node_exporter-{{ nodeexporter_version }}.linux-amd64.tar.gz
     dest=/usr/local/bin
     copy=no
     creates=/usr/local/bin/node_exporter
