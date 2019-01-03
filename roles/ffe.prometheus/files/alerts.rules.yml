@@ -35,7 +35,7 @@ groups:
     annotations:
       description: "More than 1 upstream session for IPv{{ $labels.ip_version }} down for more than 1 minute"
       summary: "Upstream sessions down on  {{ $labels.instance }} (IPv{{ $labels.ip_version }})"
-  - alert: DiscSpaceLow
+  - alert: DiskSpaceLow
     expr: node_filesystem_avail{mountpoint="/"} / 2^20 < 500
     for: 1m
     labels:
@@ -43,7 +43,7 @@ groups:
     annotations:
       description: "Less than 500M available on /"
       summary: "Disc space low on {{ $labels.instance }}"
-  - alert: DiscSpaceLowCritical
+  - alert: DiskSpaceLowCritical
     expr: node_filesystem_avail{mountpoint="/"} / 2^20 < 100
     for: 1m
     labels:
@@ -51,3 +51,27 @@ groups:
     annotations:
       description: "Less than 100M available on /"
       summary: "Disc space low on {{ $labels.instance }}"
+  - alert: SiteDown 
+    expr: up{job="snmp_city"} == 0
+    for: 15h
+    labels:
+      severity: notify
+    annotations:
+      description: "Site gateway {{ $labels.instance }} could not be scraped for 15 minutes"
+      summary: "Site {{ $labels.site }} down"
+  - alert: ConntrackUsageHigh
+    expr: node:conntrack_usage_percent > 75
+    for: 1m
+    labels:
+      severity: notify
+    annotations:
+      description: "Conntrack usage > 75%"
+      summary: "Conntrack usage high {{ $labels.instance }}"
+  - alert: ConntrackUsageHighCritical
+    expr: node:conntrack_usage_percent > 90
+    for: 1m
+    labels:
+      severity: page
+    annotations:
+      description: "Conntrack usage > 90%"
+      summary: "Conntrack usage high {{ $labels.instance }}"

@@ -129,3 +129,6 @@ groups:
       expr: sum(node_bb:egress:rate1m_by_peer{kind!="downstream"})
       labels:
         site: dus
+
+    - record: node:conntrack_usage_percent
+      expr: (100 / node_nf_conntrack_entries_limit) * node_nf_conntrack_entries
