@@ -1,0 +1,21 @@
+- name: Ensure mesh-accounce is up to date
+  git:
+    repo: 'https://github.com/ffnord/mesh-announce'
+    dest: /opt/mesh-announce
+
+- name: Ensure service is configured
+  template:
+    src: service.j2
+    dest: /etc/systemd/system/respondd.service
+  register: service
+
+- name: Reload systemd
+  systemd: 
+    daemon_reload: yes
+  when: service.changed
+
+- name: Ensure service is enabled and started
+  systemd: 
+    name: respondd
+    enabled: yes
+    state: started
