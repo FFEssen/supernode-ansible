@@ -16,10 +16,12 @@
     scope: city_backbone
 
 {% for site in bb_sites %}
+{% if site.active | default(true) %}
 
 - targets: [ {{ site.hostname | default("gw01." + (site.name[3:] | lower) + ".dev.freifunk-essen.net") }} ]
   labels:
     job: snmp_city
     site: {{ site.name }}
     scope: city_backbone
+{% endif %}
 {% endfor %}

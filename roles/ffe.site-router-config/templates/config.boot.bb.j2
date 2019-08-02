@@ -48,7 +48,9 @@ interfaces {
         duplex auto
         speed auto
         vif 42 {
+{% if site.client_net.ipv6 is defined %}
             address {{ site.client_net.ipv6 | ipaddr(1) }}
+{% endif %}
             address {{ site.client_net.ipv4 | ipaddr(1) }}
             description Freifunk
         }

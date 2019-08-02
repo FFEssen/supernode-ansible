@@ -17,26 +17,26 @@ groups:
         site: dus
 
     - record: node_bb:ingress:rate1m_by_peer
-      expr: irate(node_network_receive_bytes_total{job="node_bb",site="ix.dus",device="eth1.10"}[1m]) * 8
+      expr: irate(node_network_receive_bytes_total{job="node_bb",site="ix.dus",device="eth0.10"}[1m]) * 8
       labels:
         peer: DECIX-DUS
         kind: ixp
         site: dus
     - record: node_bb:egress:rate1m_by_peer
-      expr: irate(node_network_transmit_bytes_total{job="node_bb",site="ix.dus",device="eth1.10"}[1m]) * 8
+      expr: irate(node_network_transmit_bytes_total{job="node_bb",site="ix.dus",device="eth0.10"}[1m]) * 8
       labels:
         peer: DECIX-DUS
         kind: ixp
         site: dus
 
     - record: node_bb:ingress:rate1m_by_peer
-      expr: irate(node_network_receive_bytes_total{job="node_bb",site="ix.dus",device="eth1.11"}[1m]) * 8
+      expr: irate(node_network_receive_bytes_total{job="node_bb",site="ix.dus",device="eth0.11"}[1m]) * 8
       labels:
         peer: DECIX-FRA
         kind: ixp
         site: dus
     - record: node_bb:egress:rate1m_by_peer
-      expr: irate(node_network_transmit_bytes_total{job="node_bb",site="ix.dus",device="eth1.11"}[1m]) * 8
+      expr: irate(node_network_transmit_bytes_total{job="node_bb",site="ix.dus",device="eth0.11"}[1m]) * 8
       labels:
         peer: DECIX-FRA
         kind: ixp
@@ -56,26 +56,26 @@ groups:
         site: dus
 
     - record: node_bb:ingress:rate1m_by_peer
-      expr: irate(node_network_receive_bytes_total{job="node_bb",site="ix.dus",device="eth1.46"}[1m]) * 8
+      expr: irate(node_network_receive_bytes_total{job="node_bb",site="ix.dus",device="eth0.46"}[1m]) * 8
       labels:
         peer: routing-rocks
         kind: peer
         site: dus
     - record: node_bb:egress:rate1m_by_peer
-      expr: irate(node_network_transmit_bytes_total{job="node_bb",site="ix.dus",device="eth1.46"}[1m]) * 8
+      expr: irate(node_network_transmit_bytes_total{job="node_bb",site="ix.dus",device="eth0.46"}[1m]) * 8
       labels:
         peer: routing-rocks
         kind: peer
         site: dus
 
     - record: node_bb:ingress:rate1m_by_peer
-      expr: irate(node_network_receive_bytes_total{job="node_bb",site="ix.dus",device=~"eth1.7[01]"}[1m]) * 8
+      expr: irate(node_network_receive_bytes_total{job="node_bb",site="ix.dus",device="eth0.70"}[1m]) * 8
       labels:
         peer: philuweb
         kind: transit
         site: dus
     - record: node_bb:egress:rate1m_by_peer
-      expr: irate(node_network_transmit_bytes_total{job="node_bb",site="ix.dus",device=~"eth1.7[01]"}[1m]) * 8
+      expr: irate(node_network_transmit_bytes_total{job="node_bb",site="ix.dus",device="eth0.70"}[1m]) * 8
       labels:
         peer: philuweb
         kind: transit
@@ -108,13 +108,13 @@ groups:
         site: dus
 
     - record: node_bb:ingress:rate1m_by_peer
-      expr: irate(node_network_receive_bytes_total{job="node_bb",site="ix.dus",device="eth1.42"}[1m]) * 8
+      expr: irate(node_network_receive_bytes_total{job="node_bb",site="ix.dus",device=~"eth0.47|eth0.4042"}[1m]) * 8
       labels:
         peer: FF-E City-Backbone
         kind: downstream
         site: dus
     - record: node_bb:egress:rate1m_by_peer
-      expr: irate(node_network_transmit_bytes_total{job="node_bb",site="ix.dus",device="eth1.42"}[1m]) * 8
+      expr: irate(node_network_transmit_bytes_total{job="node_bb",site="ix.dus",device=~"eth0.47|eth0.4042"}[1m]) * 8
       labels:
         peer: FF-E City-Backbone
         kind: downstream
