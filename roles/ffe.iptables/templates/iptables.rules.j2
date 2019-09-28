@@ -88,6 +88,7 @@ COMMIT
 :OUTPUT ACCEPT [139384:11006472]
 :POSTROUTING ACCEPT [138887:10983100]
 {% if nat_ip is defined %}
+-A POSTROUTING -s 100.64.0.0/10 -j RETURN
 -A POSTROUTING -o t-+ -j SNAT --to-source {{nat_ip.ffrl}}
 -A POSTROUTING -o bb-+ -j SNAT --to-source {{nat_ip.ffe}}
 {% endif %}
