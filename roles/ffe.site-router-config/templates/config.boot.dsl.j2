@@ -287,7 +287,6 @@ service {
     }
 }
 system {
-    domain-name 8.8.4.4
     host-name {{ site.name }}
     login {
         user dan_nrw {
@@ -343,6 +342,7 @@ system {
             level admin
         }
     }
+    name-server 8.8.4.4
     ntp {
         server time1.google.com {
         }
