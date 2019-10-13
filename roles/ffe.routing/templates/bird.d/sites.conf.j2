@@ -51,20 +51,25 @@ filter site_out {
 
 {% for site in dsl_sites %}
 {% if site.bgp is defined %}
-{% if openvpn is defined %}
+{% if openvpn is defined and site.tunnel | default('openvpn') == 'openvpn' %}
 protocol bgp {{ site.bgp.name }}_ovpn from generic_bgp {
   neighbor {{ openvpn.ipv4.server_net | ipaddr(site.id) | ipaddr('address') }} as {{ own_as }};
   import filter site_in_failsafe;
   export filter site_out_failsafe;
 }
-{% endif %}
-
-{% if site.tunnel | default('') == 'gre' %}
+{% else if gre is defined and site.tunnel | default('') == 'gre' %}
 protocol bgp {{ site.bgp.name }}_gre from generic_bgp {
   neighbor {{ gre.ipv4.server_net | ipsubnet(31, site.id) | ipaddr(1) | ipaddr('address') }} as {{ own_as }};
   import filter site_in;
   export filter site_out;
 }
+{% else if wireguard is defined and site.tunnel | default('') == 'wireguard' %}
+protocol bgp {{ site.bgp.name }}_wg from generic_bgp {
+  neighbor {{ wireguard.interfaces.wg0.network | ipaddr(site.id) | ipaddr('address') }} as {{ own_as }};
+  import filter site_in;
+  export filter site_out;
+}
 {% endif %}
+
 {% endif %}
 {% endfor %}
