@@ -91,8 +91,24 @@ interfaces {
     loopback lo {
     }
     openvpn vtun0 {
-        config-file /config/openvpn.mgmt.conf
-        description Management-VPN
+        description "MGMT VPN"
+        encryption aes256
+        mode client
+        openvpn-option "--tls-auth /config/auth/ta.key 1"
+        openvpn-option "--auth SHA384"
+        openvpn-option --comp-lzo
+        openvpn-option --persist-key
+        openvpn-option --persist-tun
+        openvpn-option "--remote-cert-tls server"
+        openvpn-option "--tls-cipher TLS-DHE-RSA-WITH-AES-256-CBC-SHA"
+        protocol udp
+        remote-host vpn.freifunk-essen.net
+        remote-port 1194
+        tls {
+            ca-cert-file /config/auth/ca.crt
+            cert-file /config/auth/client.crt
+            key-file /config/auth/client.key
+        }
     }
     switch switch0 {
         mtu 1500
