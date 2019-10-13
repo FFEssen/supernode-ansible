@@ -57,13 +57,13 @@ protocol bgp {{ site.bgp.name }}_ovpn from generic_bgp {
   import filter site_in_failsafe;
   export filter site_out_failsafe;
 }
-{% else if gre is defined and site.tunnel | default('') == 'gre' %}
+{% elif gre is defined and site.tunnel | default('') == 'gre' %}
 protocol bgp {{ site.bgp.name }}_gre from generic_bgp {
   neighbor {{ gre.ipv4.server_net | ipsubnet(31, site.id) | ipaddr(1) | ipaddr('address') }} as {{ own_as }};
   import filter site_in;
   export filter site_out;
 }
-{% else if wireguard is defined and site.tunnel | default('') == 'wireguard' %}
+{% elif wireguard is defined and site.tunnel | default('') == 'wireguard' %}
 protocol bgp {{ site.bgp.name }}_wg from generic_bgp {
   neighbor {{ wireguard.interfaces.wg0.network | ipaddr(site.id) | ipaddr('address') }} as {{ own_as }};
   import filter site_in;

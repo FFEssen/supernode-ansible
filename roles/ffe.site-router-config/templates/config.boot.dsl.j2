@@ -166,7 +166,7 @@ protocols {
         }
 {% endif %}
 {% for node in groups['supernodes'] %}
-        neighbor 100.84.{{ hostvars[node].id }}.{{ site.id }} {
+        neighbor {{ hostvars[node].wireguard.interfaces.wg0.network | ipaddr(1) | ipaddr('address') }} {
             nexthop-self
             prefix-list {
                 export sn-out
