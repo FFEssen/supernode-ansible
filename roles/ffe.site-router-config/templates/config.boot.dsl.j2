@@ -203,10 +203,6 @@ protocols {
             }
         }
 {% endfor %}
-        route 195.201.95.199/32 {
-            next-hop {{ site.gateway }} {
-            }
-        }
         route 94.130.183.96/32 {
             next-hop {{ site.gateway }} {
             }
