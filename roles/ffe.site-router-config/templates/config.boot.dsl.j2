@@ -76,7 +76,7 @@ interfaces {
         duplex auto
         speed auto
     }
-{% if (site.model | default('')) != 'ER-LITE' %}
+{% if (site.model | default('')) | match('ER-X.*') %}
     ethernet eth3 {
         duplex auto
         speed auto
@@ -85,11 +85,16 @@ interfaces {
         duplex auto
         speed auto
     }
-{% endif %}
 {% if (site.model | default('')) == 'ER-X-SFP' %}
     ethernet eth5 {
         duplex auto
         speed auto
+    }
+{% endif %}
+{% endif %}
+{% if (site.model | default('')) | match('ER-X.*') %}
+    switch switch0 {
+        mtu 1500
     }
 {% endif %}
     loopback lo {
