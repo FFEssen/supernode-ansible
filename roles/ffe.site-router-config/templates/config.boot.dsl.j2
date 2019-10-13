@@ -24,25 +24,14 @@ interfaces {
     ethernet eth1 {
         duplex auto
         speed auto
-    }
-    ethernet eth2 {
-        duplex auto
-        speed auto
-    }
-    ethernet eth3 {
-        duplex auto
-        speed auto
-    }
-    ethernet eth4 {
 {% if site.mgmt is defined %}    
         address {{ site.mgmt.ipv4 | ipaddr(1) }}
         description Management
-        duplex auto
-        speed auto
         vif 42 {
-            address {{ prefix.ipv4 | ipaddr(1) }}
-            address {{ prefix.ipv6 | ipsubnet(64, 0) | ipaddr(1) }}
             description Freifunk
+            address {{ prefix.ipv4 | ipaddr(1) }}
+{% if prefix.ipv6 is defined %}
+            address {{ prefix.ipv6 | ipsubnet(64, 0) | ipaddr(1) }}
             ipv6 {
                 dup-addr-detect-transmits 1
                 router-advert {
@@ -58,13 +47,13 @@ interfaces {
                     send-advert true
                 }
             }
+{% endif %}
         }
 {% else %}
-        address {{ prefix.ipv4 | ipaddr(1) }}
-        address {{ prefix.ipv6 | ipsubnet(64, 0) | ipaddr(1) }}
         description Freifunk
-        duplex auto
-        speed auto
+        address {{ prefix.ipv4 | ipaddr(1) }}
+{% if prefix.ipv6 is defined %}
+        address {{ prefix.ipv6 | ipsubnet(64, 0) | ipaddr(1) }}
         ipv6 {
             dup-addr-detect-transmits 1
             router-advert {
@@ -81,7 +70,22 @@ interfaces {
             }
         }
 {% endif %}
+{% endif %}
     }
+    ethernet eth2 {
+        duplex auto
+        speed auto
+    }
+{% if (site.model | default('')) != 'ER-LITE' %}
+    ethernet eth3 {
+        duplex auto
+        speed auto
+    }
+    ethernet eth4 {
+        duplex auto
+        speed auto
+    }
+{% endif %}
 {% if (site.model | default('')) == 'ER-X-SFP' %}
     ethernet eth5 {
         duplex auto
@@ -127,11 +131,14 @@ policy {
             action permit
             prefix {{ prefix.ipv4 }}
         }
+{% if site.mgmt is defined %}
         rule 20 {
             action permit
             prefix {{ site.mgmt.ipv4 }}
         }
+{% endif %}
     }
+{% if prefix.ipv6 is defined %}
     prefix-list6 sn-in-ipv6 {
         rule 10 {
             action permit
@@ -144,16 +151,20 @@ policy {
             prefix {{ prefix.ipv6 | ipsubnet(64, 0) }}
         }
     }
+{% endif %}
 }
 protocols {
     bgp 65406 {
+{% if prefix.ipv6 is defined %}
         address-family {
             ipv6-unicast {
                 network {{ prefix.ipv6 | ipsubnet(64, 0) }} {
                 }
             }
         }
-        neighbor 10.228.100.1 {
+{% endif %}
+{% for node in groups['supernodes'] %}
+        neighbor 100.84.{{ hostvars[node].id }}.{{ site.id }} {
             nexthop-self
             prefix-list {
                 export sn-out
@@ -164,78 +175,42 @@ protocols {
                 inbound
             }
         }
-        neighbor 10.228.101.1 {
-            nexthop-self
-            prefix-list {
-                export sn-out
-                import sn-in
-            }
-            remote-as 65406
-            soft-reconfiguration {
-                inbound
-            }
-        }
-        neighbor 10.228.102.1 {
-            nexthop-self
-            prefix-list {
-                export sn-out
-                import sn-in
-            }
-            remote-as 65406
-            soft-reconfiguration {
-                inbound
-            }
-        }
-        neighbor 10.228.103.1 {
-            nexthop-self
-            prefix-list {
-                export sn-out
-                import sn-in
-            }
-            remote-as 65406
-            soft-reconfiguration {
-                inbound
-            }
-        }
+{% endfor %}
         network {{ prefix.ipv4 }} {
         }
+{% if site.mgmt is defined %}
         network {{ site.mgmt.ipv4 }} {
         }
+{% endif %}
         parameters {
             router-id 100.72.{{ site.id }}.1
         }
     }
 {% if site.gateway is defined %}
     static {
-        route 195.201.36.184/32 {
+        route 216.239.35.0/32 {
             next-hop {{ site.gateway }} {
             }
         }
-        route 195.201.95.199/32 {
-            next-hop {{ site.gateway }} {
-            }
-        }
-        route 185.46.137.143/32 {
-            next-hop {{ site.gateway }} {
-            }
-        }
-        route 185.46.137.144/32 {
-            next-hop {{ site.gateway }} {
-            }
-        }
-        route 94.130.183.96/32 {
-            next-hop {{ site.gateway }} {
-            }
-        }
-        route 185.65.240.123/32 {
-            next-hop {{ site.gateway }} {
-            }
-        }
-        route 216.239.35.0/24 {
+        route 216.239.35.4/32 {
             next-hop {{ site.gateway }} {
             }
         }
         route 8.8.4.4/32 {
+            next-hop {{ site.gateway }} {
+            }
+        }
+{% for node in groups['supernodes'] %}
+        route {{ hostvars[node].public_ipv4 }}/32 {
+            next-hop {{ site.gateway }} {
+            }
+        }
+{% endfor %}
+        route 195.201.95.199/32 {
+            next-hop {{ site.gateway }} {
+            }
+        }
+        route 94.130.183.96/32 {
             next-hop {{ site.gateway }} {
             }
         }
@@ -274,8 +249,10 @@ service {
     dns {
         forwarding {
             cache-size 10000
-            listen-on eth4
-            listen-on eth4.42
+            listen-on eth2
+{% if site.mgmt is defined %}
+            listen-on eth2.42
+{% endif %}
             name-server 8.8.8.8
         }
     }
@@ -298,7 +275,7 @@ service {
             client 172.16.0.6
         }
         contact noc@freifunk-essen.de
-        listen-address {{ site.mgmt.ipv4 | ipaddr(1) | ipaddr('address') }} {
+        listen-address {% if site.mgmt is defined %}{{ site.mgmt.ipv4 | ipaddr(1) | ipaddr('address') }}{% else %}172.16.0.{{ site.id }}{% endif %} {
             port 161
         }
         location {{ site.name }}
