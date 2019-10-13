@@ -1,0 +1,29 @@
+- name: Ensure apt sources are installed
+  apt_repository:
+    filename: wireguard.list
+    repo: deb http://deb.debian.org/debian/ unstable main
+    state: present
+
+- name: Ensure wireguard is installed
+  apt:
+    name: wireguard
+    update_cache: yes 
+
+- name: Configure wg0
+  template:
+    src: wg0.conf.j2
+    dest: /etc/wireguard/wg0.conf
+    mode: 0644
+    owner: root
+  notify:
+  - Reload wg0
+
+- name: Ensure service is enabled
+  systemd:
+    name: wg-quick@wg0
+    enabled: yes
+
+- name: Ensure service is running
+  systemd:
+    name: wg-quick@wg0
+    state: started

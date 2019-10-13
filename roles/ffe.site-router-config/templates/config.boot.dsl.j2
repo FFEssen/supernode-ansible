@@ -203,7 +203,7 @@ protocols {
             }
         }
 {% for node in groups['supernodes'] %}
-        route {{ hostvars[node].public_ipv4 }}/32 {
+        route {{ hostvars[node].host_ip }}/32 {
             next-hop {{ site.gateway }} {
             }
         }

@@ -1,0 +1,17 @@
+{% set wg_prefix = '100.84.1.0/24' %}
+[Interface]
+Address = {{ wg_prefix | ipaddr(1) }}
+PrivateKey = {{ wireguard.interfaces.wg0.private_key }} 
+ListenPort = 51820
+
+{% for site in dsl_sites %}
+{% if site.tunnel | default('') == 'wireguard' %}
+[Peer]
+PublicKey = {{ site.wireguard.public_key }}
+AllowedIPs = {{ wg_prefix | ipaddr(site.id) }}
+{% for prefix in site.prefixes %}
+AllowedIPs = {{ prefix.ipv4 }}
+{% endfor %}
+
+{% endif %}
+{% endfor %} 
