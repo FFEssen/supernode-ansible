@@ -34,6 +34,7 @@ interfaces {
         speed auto
     }
     ethernet eth4 {
+{% if site.mgmt is defined %}    
         address {{ site.mgmt.ipv4 | ipaddr(1) }}
         description Management
         duplex auto
@@ -58,6 +59,28 @@ interfaces {
                 }
             }
         }
+{% else %}
+        address {{ prefix.ipv4 | ipaddr(1) }}
+        address {{ prefix.ipv6 | ipsubnet(64, 0) | ipaddr(1) }}
+        description Freifunk
+        duplex auto
+        speed auto
+        ipv6 {
+            dup-addr-detect-transmits 1
+            router-advert {
+                cur-hop-limit 64
+                link-mtu 1364
+                managed-flag false
+                max-interval 20
+                name-server 2001:4860:4860::8888
+                other-config-flag false
+                prefix {{ prefix.ipv6 | ipsubnet(64, 0) }} {
+                    autonomous-flag true
+                }
+                send-advert true
+            }
+        }
+{% endif %}
     }
 {% if (site.model | default('')) == 'ER-X-SFP' %}
     ethernet eth5 {
@@ -218,6 +241,7 @@ service {
                 }
             }
         }
+{% if site.mgmt is defined %}
         shared-network-name MGMT {
             authoritative disable
             subnet {{ site.mgmt.ipv4 }} {
@@ -229,6 +253,7 @@ service {
                 }
             }
         }
+{% endif %}
     }
     dns {
         forwarding {
