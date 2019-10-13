@@ -18,7 +18,7 @@
   copy: src=on_down.sh dest={{openvpn_config_dir}}/on_down.sh owner=root mode=0755
 
 - name: Creating ccd files
-  template: src=ccd.j2 dest={{openvpn_config_dir}}/ccd/{{item.name}} owner=root mode=0444
+  template: src=ccd.j2 dest={{openvpn_config_dir}}/ccd/{{ item.vpn_name | default(item.name) }} owner=root mode=0444
   with_items: '{{dsl_sites}}'
 
 - name: Configure openvpn server
