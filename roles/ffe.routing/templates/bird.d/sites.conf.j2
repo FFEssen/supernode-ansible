@@ -68,6 +68,7 @@ protocol bgp {{ site.bgp.name }}_wg from generic_bgp {
   neighbor {{ wireguard.interfaces.wg0.network | ipaddr(site.id) | ipaddr('address') }} as {{ own_as }};
   import filter site_in;
   export filter site_out;
+  source address {{ wireguard.interfaces.wg0.network | ipaddr(1) | ipaddr('address') }};
 }
 {% endif %}
 

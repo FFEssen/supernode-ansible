@@ -8,7 +8,7 @@ ListenPort = 51820
 {% if site.tunnel | default('') == 'wireguard' %}
 [Peer]
 PublicKey = {{ site.wireguard.public_key }}
-AllowedIPs = {{ wg_prefix | ipaddr(site.id) }}
+AllowedIPs = {{ wg_prefix | ipaddr(site.id) | ipaddr('address') }}/32
 {% for prefix in site.prefixes %}
 AllowedIPs = {{ prefix.ipv4 }}
 {% endfor %}

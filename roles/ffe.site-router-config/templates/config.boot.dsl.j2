@@ -119,6 +119,23 @@ interfaces {
             key-file /config/auth/client.key
         }
     }
+{% if site.tunnel | default('') == 'wireguard' %}
+{% for node in groups['supernodes'] %}
+    wireguard wg{{ loop.index - 1 }} {
+        address {{ hostvars[node].wireguard.interfaces.wg0.network | ipaddr(site.id) | ipaddr('address') }}/24
+        mtu 1420
+        peer {{ hostvars[node].wireguard.interfaces.wg0.public_key }} {
+            allowed-ips 0.0.0.0/0
+            allowed-ips ::/0
+            description {{ node }}
+            endpoint {{ hostvars[node].host_ip }}:51820
+            persistent-keepalive 25
+        }
+        private-key {{ site.wireguard.private_key }}
+        route-allowed-ips false
+    }
+{% endfor %}
+{% endif %}
 }
 policy {
     prefix-list sn-in {
