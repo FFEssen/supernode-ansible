@@ -22,9 +22,6 @@
 - name: Ensure dummy dir exists
   file: name={{fastd_config_dir}}/essen/dummy state=directory owner=fastd mode=0500
 
-- name: Ensure server directory exists
-  file: name={{fastd_config_dir}}/backbone/servers state=directory owner=fastd mode=0500
-
 - name: Copy blacklist.sh
   copy: src=blacklist.sh dest={{fastd_config_dir}}/essen/blacklist.sh owner=fastd mode=0500
 
@@ -39,4 +36,4 @@
   copy: src=fastd_logrotate dest=/etc/logrotate.d/fastd mode=0644 owner=root
 
 - name: Ensure service is enabled
-  service: name=fastd enabled=yes
+  service: name=fastd@essen enabled=yes
