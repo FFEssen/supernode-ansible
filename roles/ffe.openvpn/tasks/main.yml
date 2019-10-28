@@ -27,3 +27,9 @@
 
 - name: Ensure logrotate config exists
   copy: src=openvpn_logrotate dest=/etc/logrotate.d/openvpn mode=0644 owner=root
+
+- name: Ensure service is enabled
+  systemd:
+    name: openvpn@server
+    enabled: yes
+    state: started

@@ -1,8 +1,7 @@
-{% set server_address = openvpn.ipv4.server_net | ipaddr('net') | ipaddr('1') | ipaddr('address') %}
-{% set server_address_ipv6 = openvpn.ipv6.server_net | ipaddr('net') | ipaddr('1') | ipaddr('address') %}
+{% set server_address = openvpn.ipv4.server_net | ipaddr('net') | ipaddr(1) | ipaddr('address') %}
+{% set server_address_ipv6 = openvpn.ipv6.server_net | ipaddr('net') | ipaddr(1) | ipaddr('address') %}
 proto udp6
 dev tun0
-tun-ipv6
 
 mode server
 tls-server
