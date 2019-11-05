@@ -264,9 +264,9 @@ service {
     dns {
         forwarding {
             cache-size 10000
-            listen-on eth2
+            listen-on eth1
 {% if site.mgmt is defined %}
-            listen-on eth2.42
+            listen-on eth1.42
 {% endif %}
             name-server 8.8.8.8
         }
