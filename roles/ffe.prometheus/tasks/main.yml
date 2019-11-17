@@ -21,6 +21,7 @@
   template: src={{ item }}.j2 dest=/etc/prometheus/tgroups/{{ item }}.yml owner=root mode=0644
   with_items:
     - snmp_city
+    - snmp_dsl_sites
     - node_bb
     - node_supernodes
     - bird_bb

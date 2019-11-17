@@ -52,7 +52,7 @@ groups:
       description: "Less than 100M available on /"
       summary: "Disc space low on {{ $labels.instance }}"
   - alert: SiteDown 
-    expr: up{job="snmp_city"} == 0
+    expr: up{job="snmp_city|snmp_dsl_sites"} == 0
     for: 15m
     labels:
       severity: notify
