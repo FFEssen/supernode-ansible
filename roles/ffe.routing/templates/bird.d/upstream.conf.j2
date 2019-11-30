@@ -44,6 +44,7 @@ protocol bgp {{ peer.name }} from upstream {
 {% endif %}
   neighbor {{ peer.ipv4.neighbor }} as {{ peer.as }};
   export filter {{ peers[peer.as].export_filter }};
+  default bgp_local_pref {{ peers[peer.as].local_pref | default(100) }};
 }
 
 {% endif %}
