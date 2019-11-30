@@ -1,0 +1,12 @@
+---
+{% for site in dsl_sites %}
+{% if site.active | default(true) and site.monitoring | default(true) %}
+
+- targets: 
+  - 172.16.0.{{ site.id }}
+  labels:
+    job: snmp_dsl_sites
+    site: {{ site.name }}
+    scope: dsl_sites
+{% endif %}
+{% endfor %}
