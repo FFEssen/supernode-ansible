@@ -2,11 +2,6 @@ filter upstream_in {
   if DRAINED = 1 then reject;
 
   if is_default_route() then {
-    bgp_local_pref = 1000;
-
-    if bgp_path.last = 206356 then {
-      bgp_local_pref = 2000;
-    }
     accept;
   }
 
@@ -44,7 +39,7 @@ protocol bgp {{ peer.name }} from upstream {
 {% endif %}
   neighbor {{ peer.ipv4.neighbor }} as {{ peer.as }};
   export filter {{ peers[peer.as].export_filter }};
-  default bgp_local_pref {{ peers[peer.as].local_pref | default(100) }};
+  default bgp_local_pref {{ peers[peer.as].local_pref | default(1000) }};
 }
 
 {% endif %}
