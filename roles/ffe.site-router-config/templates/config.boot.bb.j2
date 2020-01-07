@@ -55,6 +55,21 @@ interfaces {
             address {{ site.client_net.ipv6 | ipaddr(1) }}
 {% endif %}
             address {{ site.client_net.ipv4 | ipaddr(1) }}
+{% if site.client_net.ipv6 is defined %}
+            ipv6 {
+                dup-addr-detect-transmits 1
+                router-advert {
+                    managed-flag false
+                    max-interval 20
+                    name-server 2001:4860:4860::8888
+                    other-config-flag false
+                    prefix {{ site.client_net.ipv6 }} {
+                        autonomous-flag true
+                    }
+                    send-advert true
+                }
+            }
+{% endif %}
             description Freifunk
         }
     }
