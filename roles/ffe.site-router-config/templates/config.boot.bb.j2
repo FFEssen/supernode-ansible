@@ -23,6 +23,9 @@ interfaces {
 {% else %}
         address 100.64.{{ site.id }}.1/31
 {% endif %}
+{% if site.client_net.ipv6 is defined %}
+        address {{ '2a0c:efc0:ffff:cb00::/56' | ipsubnet(64, site.id) | ipaddr('2') }} 
+{% endif %}
         description Uplink
         duplex auto
         ip {
@@ -110,9 +113,31 @@ policy {
             prefix {{ site.client_net.ipv4 }}
         }
     }
+{% if site.client_net.ipv6 is defined %}
+    prefix-list6 upstream-in-ipv6 {
+        rule 10 {
+            action permit
+            prefix ::/0 
+        }
+    }
+    prefix-list6 upstream-out-ipv6 {
+        rule 10 {
+            action permit
+            prefix {{ site.client_net.ipv6 }}
+        }
+    }
+{% endif %}
 }
 protocols {
     bgp 4200000100 {
+{% if site.client_net.ipv6 is defined %}
+        address-family {
+            ipv6-unicast {
+                network {{ site.client_net.ipv6 }} {
+                }
+            }
+        }
+{% endif %}
         neighbor 172.17.10.0 {
             nexthop-self
             prefix-list {
@@ -125,6 +150,23 @@ protocols {
             }
             update-source 172.17.10.{{ site.id }}
         }
+{% if site.client_net.ipv6 is defined %}
+        neighbor {{ '2a0c:efc0:ffff:cb00::/56' | ipsubnet(64, site.id) | ipaddr('1') }} {
+            address-family {
+                ipv6-unicast {
+                    nexthop-self
+                    prefix-list {
+                        export upstream-out-ipv6
+                        import upstream-in-ipv6
+                    }
+                    soft-reconfiguration {
+                        inbound
+                    }
+                }
+            }
+            remote-as 4200000100
+        }
+{% endif %}
         network {{ site.client_net.ipv4 }} {
         }
         network 172.17.{{ site.id }}.0/24 {
