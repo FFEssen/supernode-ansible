@@ -166,7 +166,7 @@ protocols {
             update-source 172.17.10.{{ site.id }}
         }
 {% if site.client_net.ipv6 is defined %}
-        neighbor {{ '2a0c:efc0:ffff:cb00::/56' | ipsubnet(64, site.id) | ipaddr('1') }} {
+        neighbor {{ '2a0c:efc0:ffff:cb00::/56' | ipsubnet(64, site.id) | ipaddr('1') | ipaddr('host') }} {
             address-family {
                 ipv6-unicast {
                     nexthop-self
