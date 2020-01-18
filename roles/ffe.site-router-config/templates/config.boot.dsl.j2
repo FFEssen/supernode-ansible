@@ -297,6 +297,15 @@ service {
         port 22
         protocol-version v2
     }
+    ubnt-discover {
+        disable
+    }
+    ubnt-discover-server {
+        disable
+    }
+    unms {
+        connection wss://{{ unms_wss_address }}
+    }
 }
 system {
     host-name {{ site.name }}
