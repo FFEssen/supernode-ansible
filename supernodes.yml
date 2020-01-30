@@ -8,7 +8,6 @@
     - ffe.tunnels
     - ffe.routing
     - ffe.iptables
-    - ffe.openvpn
     - { role: ffe.unbound, when: mesh_enabled }
     - { role: ffe.ntpd, when: mesh_enabled }
     - { role: ffe.dhcpd, when: mesh_enabled }
