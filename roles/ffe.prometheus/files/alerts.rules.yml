@@ -12,7 +12,7 @@ groups:
       description: Host {{ $labels.instance }} is unreachable for more than 15 minutes
       summary: Host {{ $labels.instance }} down
   - alert: UpstreamDown
-    expr: bird_protocol_up{name=~"herms.*|lwlcom.*|init7.*"} == 0
+    expr: bird_protocol_up{name=~"philunet.*|lwlcom.*|init7.*"} == 0
     for: 15m
     labels:
       severity: notify
