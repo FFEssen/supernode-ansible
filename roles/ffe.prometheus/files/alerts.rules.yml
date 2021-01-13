@@ -12,7 +12,7 @@ groups:
       description: Host {{ $labels.instance }} is unreachable for more than 15 minutes
       summary: Host {{ $labels.instance }} down
   - alert: UpstreamDown
-    expr: bird_protocol_up{name=~"philunet.*|lwlcom.*|init7.*"} == 0
+    expr: bird_protocol_up{name=~"philunet.*|lwlcom.*|init7.*",export_filter!="drain"} == 0
     for: 15m
     labels:
       severity: notify
@@ -20,7 +20,7 @@ groups:
       description: BGP session {{ $labels.name }} is down for more than 15 minutes
       summary: Upstream session down on {{ $labels.instance }}
   - alert: IXPDown
-    expr: bird_protocol_up{name=~"decix.*|ecix.*|community.*"} == 0
+    expr: bird_protocol_up{name=~"decix.*|ecix.*|community.*",export_filter!="drain"} == 0
     for: 15m
     labels:
       severity: notify
@@ -28,7 +28,7 @@ groups:
       description: BGP session {{ $labels.name }} is down for more than 15 minutes
       summary: Route server session down on {{ $labels.instance }}
   - alert: UpstreamDownCritical
-    expr: sum(bird_protocol_up{name=~"herms.*|lwlcom.*|init7.*"} == 0) by (instance, ip_version) > 1
+    expr: sum(bird_protocol_up{name=~"herms.*|lwlcom.*|init7.*",export_filter!="drain"} == 0) by (instance, ip_version) > 1
     for: 1m
     labels:
       severity: page
