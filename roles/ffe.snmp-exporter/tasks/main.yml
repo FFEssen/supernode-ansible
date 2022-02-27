@@ -1,28 +1,18 @@
 ---
 
-- name: Ensure config dir exists
-  file: name=/etc/prometheus state=directory owner=root mode=0755
-
-- name: Ensure data dir exists
-  file: name=/var/prometheus state=directory owner=prometheus mode=0700
-
 - name: Ensure dependencies are installed
-  apt: name={{item}} state=present update_cache=yes
-  with_items:
-    - libsnmp-python
-    - python-netsnmp
-
-- name: Install newest version of snmp_exporter
-  pip: name=snmp_exporter state=latest
+  apt: 
+    name: prometheus-snmp-exporter
 
 - name: Configure snmp_exporter
-  copy: src=snmp.yml dest=/etc/prometheus/snmp.yml owner=root mode=0644
-
-- name: Install systemd unit
-  copy: src=snmp_exporter.service dest=/lib/systemd/system/snmp_exporter.service
-
-- name: Reload systemd
-  shell: systemctl daemon-reload
+  copy: 
+    src: snmp.yml 
+    dest: /etc/prometheus/snmp.yml 
+    owner: root 
+    mode: 0644
 
 - name: Start service
-  service: name=snmp_exporter state=restarted enabled=yes
+  service: 
+    name: prometheus-snmp-exporter 
+    state: restarted
+    enabled: yes
