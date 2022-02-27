@@ -9,46 +9,45 @@
     - upgrade
   notify: Restart caddy
 
-- name: Ensure caddy is allowed to open ports < 1024
-  shell: setcap cap_net_bind_service=+ep /usr/local/bin/caddy
-
-- name: Ensure caddy directory exists
-  file: 
-    path: /etc/caddy 
-    owner: root 
-    mode: 0755 
+- name: Ensure caddy config directory exists
+  file:
+    path: /etc/caddy
+    owner: www-data
+    mode: 0755
     state: directory
 
-- name: Ensure caddypath directory exists
-  file: 
-    path: /var/caddy 
-    owner: www-data 
-    mode: 0750 
+- name: Ensure caddy directories exists
+  file:
+    path: "{{ item }}"
+    owner: www-data
+    mode: 0755
     state: directory
+  with_items:
+  - "/etc/caddy"
+  - "/var/www/.local/"
+  - "/var/www/.config/"
+  - "/var/log/caddy"
 
 - name: Ensure config is up to date
-  template: 
-    src: Caddyfile.j2 
-    dest: /etc/caddy/Caddyfile 
-    owner: root 
+  template:
+    src: Caddyfile.j2
+    dest: /etc/caddy/Caddyfile
+    owner: root
     mode: 0644
   notify: Restart caddy
 
 - name: Ensure service unit exists
-  copy: 
-    src: caddy.service 
-    dest: /lib/systemd/system/caddy.service 
-    mode: 0644 
+  copy:
+    src: caddy.service
+    dest: /lib/systemd/system/caddy.service
+    mode: 0644
     owner: root
   register: systemd
 
-- block:
-  - name: Reload systemd
-    shell: systemctl daemon-reload
-
-  - name: Ensure service is enabled
-    service: name=caddy enabled=yes
-
-  - name: Ensure service is started
-    service: name=caddy state=started
+- name: Ensure service is enabled and started
+  systemd:
+    daemon_reload: yes
+    name: caddy
+    state: started
+    enabled: yes
   when: systemd.changed

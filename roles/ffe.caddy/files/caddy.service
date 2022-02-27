@@ -3,9 +3,9 @@ Description=Caddy Webserver
 
 [Service]
 User=www-data
-ExecStart=/usr/local/bin/caddy -conf /etc/caddy/Caddyfile -agree
+LogsDirectory=/var/log/caddy
+ExecStart=/usr/local/bin/caddy run -config /etc/caddy/Caddyfile -adapter caddyfile
 Restart=on-failure
-Environment=CADDYPATH=/var/caddy
 CapabilityBoundingSet=CAP_NET_BIND_SERVICE
 AmbientCapabilities=CAP_NET_BIND_SERVICE
 LimitNOFILE=8192
@@ -24,6 +24,7 @@ RestrictRealtime=yes
 RestrictSUIDSGID=yes
 MemoryDenyWriteExecute=yes
 LockPersonality=yes
+
 
 [Install]
 WantedBy=default.target

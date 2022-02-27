@@ -1,38 +1,38 @@
 {% for site in caddy.sites | default([]) %}
-{{ site.domain }}{% if site.custom_ssl is defined and not (site.domain is match('.+\:\d+$')) %}:443{% endif %} {
+{{ site.domain }} {
 {% if site.allowed_ips is defined %}
-  ipfilter / {
-    rule allow
-    ip {{ site.allowed_ips }}
+  @ipfilter {
+    not remote_ip {{ site.allowed_ips }}
+  }
+  handle @ipfilter {
+    respond 403
   }
 {% endif %}
 {% for p in site.proxy | default([]) %}
-  proxy {{ p.location | default('/') }} {{ p.backend }} {
-{% if p.transparent | default(true) %}
-    transparent
-{% endif %}
-{% if p.websocket | default(false) %}
-    websocket
+  reverse_proxy {{ p.location | default('*') }} {{ p.backend }} {
+{% if not p.transparent | default(true) %}
+    header_up Host {http.reverse_proxy.upstream.hostport}
 {% endif %}
 {% if site.skip_verify_backend_tls | default(false) %}
-    insecure_skip_verify
+    transport http {
+      tls_insecure_skip_verify 
+    }
 {% endif %}
   }
 {% endfor %}
 
-  gzip
-{% if not site.tls | default(true) %}
-  tls off
-{% endif %}
+  encode gzip  
+  log {
+    output file /var/log/caddy/access.log {
+      roll_keep 4
+      roll_keep_for 7d
+    }
+  }
 {% if site.auth is defined %}
-  basicauth {{ site.auth.location | default('/') }} {{ site.auth.user }} {{ site.auth.pass }}
+  basicauth {{ site.auth.location | default('/*') }} {
+    {{ site.auth.user }} {{ site.auth.pass }}
+  }
 {% endif %}
 }
-
-{% if site.custom_ssl is defined and site.redirect_http | default(true) %}
-{{ site.domain }}:80 {
-  redir https://{{ site.domain }}{uri}
-}
-{% endif %}
 
 {% endfor %}
