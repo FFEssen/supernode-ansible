@@ -1,0 +1,38 @@
+{% for site in caddy.sites | default([]) %}
+{{ site.domain }}{% if site.custom_ssl is defined and not (site.domain is match('.+\:\d+$')) %}:443{% endif %} {
+{% if site.allowed_ips is defined %}
+  ipfilter / {
+    rule allow
+    ip {{ site.allowed_ips }}
+  }
+{% endif %}
+{% for p in site.proxy | default([]) %}
+  proxy {{ p.location | default('/') }} {{ p.backend }} {
+{% if p.transparent | default(true) %}
+    transparent
+{% endif %}
+{% if p.websocket | default(false) %}
+    websocket
+{% endif %}
+{% if site.skip_verify_backend_tls | default(false) %}
+    insecure_skip_verify
+{% endif %}
+  }
+{% endfor %}
+
+  gzip
+{% if not site.tls | default(true) %}
+  tls off
+{% endif %}
+{% if site.auth is defined %}
+  basicauth {{ site.auth.location | default('/') }} {{ site.auth.user }} {{ site.auth.pass }}
+{% endif %}
+}
+
+{% if site.custom_ssl is defined and site.redirect_http | default(true) %}
+{{ site.domain }}:80 {
+  redir https://{{ site.domain }}{uri}
+}
+{% endif %}
+
+{% endfor %}

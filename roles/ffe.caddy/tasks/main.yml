@@ -1,0 +1,54 @@
+---
+
+- name: Ensure newest caddy version is installed
+  unarchive:
+    src: https://github.com/caddyserver/caddy/releases/download/v2.4.6/caddy_2.4.6_linux_amd64.tar.gz 
+    dest: /usr/local/bin
+    remote_src: yes
+  tags:
+    - upgrade
+  notify: Restart caddy
+
+- name: Ensure caddy is allowed to open ports < 1024
+  shell: setcap cap_net_bind_service=+ep /usr/local/bin/caddy
+
+- name: Ensure caddy directory exists
+  file: 
+    path: /etc/caddy 
+    owner: root 
+    mode: 0755 
+    state: directory
+
+- name: Ensure caddypath directory exists
+  file: 
+    path: /var/caddy 
+    owner: www-data 
+    mode: 0750 
+    state: directory
+
+- name: Ensure config is up to date
+  template: 
+    src: Caddyfile.j2 
+    dest: /etc/caddy/Caddyfile 
+    owner: root 
+    mode: 0644
+  notify: Restart caddy
+
+- name: Ensure service unit exists
+  copy: 
+    src: caddy.service 
+    dest: /lib/systemd/system/caddy.service 
+    mode: 0644 
+    owner: root
+  register: systemd
+
+- block:
+  - name: Reload systemd
+    shell: systemctl daemon-reload
+
+  - name: Ensure service is enabled
+    service: name=caddy enabled=yes
+
+  - name: Ensure service is started
+    service: name=caddy state=started
+  when: systemd.changed
