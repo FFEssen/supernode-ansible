@@ -1,4 +1,4 @@
-edgerouter:
+if_mib:
   auth:
     community: ffe 
   walk:
