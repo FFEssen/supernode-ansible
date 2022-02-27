@@ -1,5 +1,6 @@
-default:
-  community: ffe 
+edgerouter:
+  auth:
+    community: ffe 
   walk:
     - 1.3.6.1.2.1.2
     - 1.3.6.1.2.1.31.1.1
