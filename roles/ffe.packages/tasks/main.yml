@@ -1,6 +1,8 @@
 ---
 - name: Ensure packages are installed
-  apt: pkg={{ item }} state=installed update_cache=true
+  apt: 
+    name: "{{ item }}"
+    update_cache: yes
   with_items:
     - tmux 
     - zsh
@@ -16,6 +18,3 @@
     - apt-transport-https 
     - ca-certificates
     - conntrack
-
-- name: Ensure go is installed
-  include: install_go.yml
