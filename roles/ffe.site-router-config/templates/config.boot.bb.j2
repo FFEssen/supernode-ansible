@@ -78,7 +78,7 @@ interfaces {
         duplex auto
         speed auto
     }
-{% if (site.model | default('')) | match('ER-X.*') %}
+{% if (site.model | default('')) is match('ER-X.*') %}
     ethernet eth3 {
         disable
         duplex auto
@@ -99,7 +99,7 @@ interfaces {
     loopback lo {
         address 172.17.10.{{ site.id }}/32
     }
-{% if (site.model | default('')) | match('ER-X.*') %}
+{% if (site.model | default('')) is match('ER-X.*') %}
     switch switch0 {
         mtu 1500
     }
