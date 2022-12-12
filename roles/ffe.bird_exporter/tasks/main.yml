@@ -1,17 +1,25 @@
----
-
-- name: Ensure bird exporter is installed 
-  environment:
-    GOPATH: /usr/local
-  shell: /usr/local/go/bin/go get -u github.com/czerwonk/bird_exporter
+- name: Ensure bird_exporter is installed
+  unarchive:
+    src: https://github.com/czerwonk/bird_exporter/releases/download/{{ bird_exporter_version }}/bird_exporter_{{ bird_exporter_version }}_linux_amd64.tar.gz
+    dest: /usr/local/bin/
+    remote_src: yes
   notify: Restart bird_exporter
-  
+
 - name: Ensure service is installed
-  copy: src=bird_exporter.service dest=/lib/systemd/system/bird_exporter.service owner=root mode=0644
-  notify: Reload systemd
+  copy:
+    src: bird_exporter.service
+    dest: /usr/lib/systemd/system/bird_exporter.service
+    mode: 0644
+    owner: root
+  register: systemd_unit
 
-- name: Ensure service is enabled
-  service: name=bird_exporter enabled=yes
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
+  when: systemd_unit.changed
 
-- name: Ensure service is started
-  service: name=bird_exporter state=started
+- name: Ensure service is running
+  systemd:
+    name: bird_exporter
+    enabled: yes
+    state: started

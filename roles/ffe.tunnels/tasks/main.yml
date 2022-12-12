@@ -1,7 +1,11 @@
 ---
 - block:
   - name: Configure tunnels
-    template: dest=/etc/network/interfaces.d/tunnels.cfg src=tunnels.j2 owner=root mode=0644
+    template: 
+      dest: /etc/network/interfaces.d/tunnels.cfg
+      src: tunnels.j2
+      owner: root
+      mode: 0644
 
   - name: Enabling interfaces
     command: /sbin/ifup {{ item.name }}

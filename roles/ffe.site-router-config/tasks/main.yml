@@ -1,5 +1,3 @@
----
-
 - name: Generate dsl site configs
   include: generate_config_dsl.yml site={{ item }}
   with_items: '{{ dsl_sites }}'

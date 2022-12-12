@@ -1,9 +1,0 @@
-[Unit]
-Description=Unbound Exporter
-
-[Service]
-User=unbound
-ExecStart=/usr/local/bin/unbound_exporter
-
-[Install]
-WantedBy=default.target

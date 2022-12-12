@@ -1,4 +1,3 @@
----
 - hosts: supernodes
   roles:
     - ffe.packages
@@ -7,12 +6,12 @@
     - { role: ffe.batman, when: mesh_enabled }
     - ffe.tunnels
     - ffe.routing
+    - ffe.wireguard
     - ffe.iptables
     - { role: ffe.unbound, when: mesh_enabled }
     - { role: ffe.ntpd, when: mesh_enabled }
     - { role: ffe.dhcpd, when: mesh_enabled }
     - { role: ffe.fastd, when: mesh_enabled }
     - { role: ffe.respondd, when: mesh_enabled }
-    - ffe.node-exporter
+    - ffe.node_exporter
     - ffe.bird_exporter
-    - { role: ffe.unbound_exporter, when: mesh_enabled }

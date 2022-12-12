@@ -1,0 +1,23 @@
+- name: Ensure node_exporter is installed
+  unarchive:
+    src: https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz
+    dest: /usr/local/bin/
+    remote_src: yes
+  notify: Restart bird_exporter
+
+- name: Ensure systemd is configured
+  copy: 
+    src: systemd.service
+    dest: /etc/systemd/system/node_exporter.service
+  register: systemd_unit
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
+  when: systemd_unit.changed
+
+- name: Start node-exporter
+  systemd:
+    name: node_exporter
+    state: started
+    enabled: yes

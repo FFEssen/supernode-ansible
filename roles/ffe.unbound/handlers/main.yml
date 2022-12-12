@@ -1,4 +1,4 @@
----
-
 - name: Restart unbound
-  service: name=unbound state=restarted
+  systemd: 
+    name: unbound
+    state: restarted

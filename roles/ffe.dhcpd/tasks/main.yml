@@ -1,14 +1,28 @@
----
 - name: Ensure dhcpd is installed
-  apt: name=isc-dhcp-server state=present update_cache=yes
+  apt: 
+    name: isc-dhcp-server
+    state: present
+    update_cache: yes
 
 - name: Ensure config dir exists
-  file: name={{dhcpd_config_dir}} state=directory owner=root mode=0500
+  file:
+    name: "{{dhcpd_config_dir}}"
+    state: directory
+    owner: root
+    mode: 0500
 
 - name: Configure dhcpd
-  template: src=dhcpd.conf.j2 dest={{dhcpd_config_dir}}/dhcpd.conf owner=root mode=0400
+  template: 
+    src: dhcpd.conf.j2
+    dest: "{{dhcpd_config_dir}}/dhcpd.conf"
+    owner: root
+    mode: 0400
   notify: Restart dhcpd
 
 - name: Configure rsyslog
-  copy: src=dhcpd.rsyslog.conf dest=/etc/rsyslog.d/dhcpd.conf owner=root mode=644
+  copy: 
+    src: dhcpd.rsyslog.conf
+    dest: /etc/rsyslog.d/dhcpd.conf
+    owner: root
+    mode: 0644
   notify: Restart rsyslog

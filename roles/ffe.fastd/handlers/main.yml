@@ -1,6 +1,9 @@
----
 - name: Restart fastd
-  service: name=fastd state=restarted
+  systemd: 
+    name: fastd
+    state: restarted
 
 - name: Restart rsyslog
-  service: name=rsyslog state=restarted
+  systemd: 
+    name: rsyslog
+    state: restarted

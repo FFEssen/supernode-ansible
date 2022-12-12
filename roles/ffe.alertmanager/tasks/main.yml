@@ -1,10 +1,16 @@
----
-
 - name: Ensure config dir exists
-  file: name=/etc/alertmanager state=directory owner=root mode=0755
+  file: 
+    name: /etc/alertmanager 
+    state: directory 
+    owner: root 
+    mode: 0755
 
 - name: Ensure config is up to date
-  template: src=alertmanager.yml.j2 dest=/etc/alertmanager/alertmanager.yml owner=root mode=0644
+  template: 
+    src: alertmanager.yml.j2
+    dest: /etc/alertmanager/alertmanager.yml
+    owner: root
+    mode: 0644
   notify: Reload alertmanager
 
 - name: Ensure docker container is running

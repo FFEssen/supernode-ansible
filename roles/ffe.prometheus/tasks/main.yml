@@ -1,16 +1,32 @@
 ---
 
 - name: Ensure config dir exists
-  file: name=/etc/prometheus state=directory owner=root mode=0755
+  file: 
+    name: /etc/prometheus
+    state: directory
+    owner: root
+    mode: 0755
 
 - name: Ensure data dir exists
-  file: name=/var/prometheus state=directory owner=nobody mode=0755
+  file: 
+    name: /var/prometheus
+    state: directory
+    owner: nobody
+    mode: 0755
 
 - name: Ensure target group dir exists
-  file: name=/etc/prometheus/tgroups state=directory owner=nobody mode=0755
+  file: 
+    name: /etc/prometheus/tgroups
+    state: directory
+    owner: nobody
+    mode: 0755
 
 - name: Configure prometheus
-  copy: src={{ item }} dest=/etc/prometheus owner=root mode=0644
+  copy: 
+    src: "{{ item }}"
+    dest: /etc/prometheus
+    owner: root
+    mode: 0644
   with_items:
     - prometheus.yml
     - alerts.rules.yml
@@ -18,7 +34,11 @@
   notify: Restart prometheus
 
 - name: Configure prometheus
-  template: src={{ item }}.j2 dest=/etc/prometheus/tgroups/{{ item }}.yml owner=root mode=0644
+  template: 
+    src: "{{ item }}.j2"
+    dest: "/etc/prometheus/tgroups/{{ item }}.yml"
+    owner: root
+    mode: 0644
   with_items:
     - snmp_city
     - snmp_dsl_sites
@@ -40,4 +60,3 @@
       - "9090:9090"
     restart_policy: always
     command: "--web.external-url=https://{{ prometheus.fqdn }} --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --storage.tsdb.retention=90d --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles --web.enable-lifecycle"
-

@@ -1,4 +1,7 @@
----
 - name: Configure sysctl
-  copy: src=sysctl.conf dest=/etc/sysctl.conf owner=root mode=0644
+  copy: 
+    src: sysctl.conf
+    dest: /etc/sysctl.conf
+    owner: root
+    mode: 0644
   notify: Reload sysctl

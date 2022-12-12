@@ -1,13 +1,6 @@
-- name: Ensure apt sources are installed
-  apt_repository:
-    filename: wireguard.list
-    repo: deb http://deb.debian.org/debian/ unstable main
-    state: present
-
 - name: Ensure wireguard is installed
   apt:
-    name: wireguard
-    update_cache: yes 
+    name: wireguard 
 
 - name: Configure wg0
   template:

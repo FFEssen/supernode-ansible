@@ -1,15 +1,25 @@
----
-
 - name: Ensure iptables-persistent is installed
-  apt: name=iptables-persistent state=present
+  apt: 
+    name: iptables-persistent
+    state: present
 
 - name: Configure iptables 
-  template: src=iptables.rules.j2 dest=/etc/iptables/rules.v4 owner=root mode=0600
+  template: 
+    src: iptables.rules.j2
+    dest: /etc/iptables/rules.v4
+    owner: root
+    mode: 0600
   notify: Reload iptables
 
 - name: Configure ip6tables
-  template: src=ip6tables.rules.j2 dest=/etc/iptables/rules.v6 owner=root mode=0600
+  template: 
+    src: ip6tables.rules.j2
+    dest: /etc/iptables/rules.v6
+    owner: root
+    mode: 0600
   notify: Reload ip6tables
 
 - name: Ensure service is enabled
-  service: name=netfilter-persistent enabled=yes
+  systemd: 
+    name: netfilter-persistent
+    enabled: yes

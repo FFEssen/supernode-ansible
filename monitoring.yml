@@ -1,8 +1,7 @@
----
 - hosts: 
     - monitoring
   roles:
     - { role: ffe.prometheus }
     - { role: ffe.alertmanager }
     - { role: ffe.snmp-exporter }
-    - { role: ffe.node-exporter }
+    - { role: ffe.node_exporter }

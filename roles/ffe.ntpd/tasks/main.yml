@@ -1,7 +1,13 @@
----
 - name: Ensure ntpd is installed
-  apt: name=ntp state=present update_cache=yes
+  apt: 
+    name: ntp
+    state: present
+    update_cache: yes
 
 - name: Configure ntpd
-  copy: src=ntp.conf dest={{ntpd_config_dir}}/ntp.conf owner=root mode=0444
+  copy: 
+    src: ntp.conf
+    dest: "{{ntpd_config_dir}}/ntp.conf"
+    owner: root
+    mode: 0444
   notify: Restart ntpd

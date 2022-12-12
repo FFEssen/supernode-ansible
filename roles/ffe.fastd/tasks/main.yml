@@ -1,39 +1,73 @@
----
-
 - name: Ensure fastd is installed
-  apt: name=fastd state=present
+  apt: 
+    name: fastd
+    state: present
 
 - name: Ensure user exists
-  user: name=fastd system=yes
+  user: 
+    name: fastd
+    system: yes
 
 - name: Ensure fastd config dir exists
-  file: name={{fastd_config_dir}} state=directory owner=fastd mode=0500
+  file: 
+    name: "{{fastd_config_dir}}"
+    state: directory
+    owner: fastd
+    mode: 0500
 
 - name: Ensure fastd config subdirs exists
-  file: name={{fastd_config_dir}}/{{item}} state=directory owner=fastd mode=0500
+  file: 
+    name: "{{fastd_config_dir}}/{{item}}"
+    state: directory
+    owner: fastd
+    mode: 0500
   with_items:
     - essen
 
 - name: Create config files
-  template: src=fastd_{{item}}.conf.j2 dest={{fastd_config_dir}}/{{item}}/fastd.conf owner=fastd mode=0400
+  template: 
+    src: "fastd_{{item}}.conf.j2"
+    dest: "{{fastd_config_dir}}/{{item}}/fastd.conf"
+    owner: fastd
+    mode: 0400
   with_items:
     - essen
 
 - name: Ensure dummy dir exists
-  file: name={{fastd_config_dir}}/essen/dummy state=directory owner=fastd mode=0500
+  file: 
+    name: "{{fastd_config_dir}}/essen/dummy" 
+    state: directory
+    owner: fastd
+    mode: 0500
 
 - name: Copy blacklist.sh
-  copy: src=blacklist.sh dest={{fastd_config_dir}}/essen/blacklist.sh owner=fastd mode=0500
+  copy: 
+    src: blacklist.sh
+    dest: "{{fastd_config_dir}}/essen/blacklist.sh"
+    owner: fastd
+    mode: 0500
 
 - name: Copy blacklist
-  copy: src=fastd-blacklist.json dest={{fastd_config_dir}}/fastd-blacklist.json owner=fastd mode=0400
+  copy: 
+    src: fastd-blacklist.json
+    dest: "{{fastd_config_dir}}/fastd-blacklist.json"
+    owner: fastd
+    mode: 0400
 
 - name: Configure rsyslog
-  copy: src=fastd.rsyslog.conf dest=/etc/rsyslog.d/fastd.conf owner=root mode=0644
+  copy: 
+    src: fastd.rsyslog.conf
+    dest: /etc/rsyslog.d/fastd.conf
+    owner: root
+    mode: 0644
   notify: Restart rsyslog
   
 - name: Ensure logrotate is configured
-  copy: src=fastd_logrotate dest=/etc/logrotate.d/fastd mode=0644 owner=root
+  copy: 
+    src: fastd_logrotate
+    dest: /etc/logrotate.d/fastd
+    mode: 0644
+    owner: root
 
 - name: Ensure service is enabled
   systemd: 

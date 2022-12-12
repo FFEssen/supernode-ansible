@@ -1,35 +1,60 @@
----
-
 - name: Ensure bird is installed
-  apt: name=bird state=present update_cache=yes
+  apt: 
+    name: bird 
+    state: present
+    update_cache: yes
 
 - name: Ensure bird config dir exists
-  file: name={{bird_config_dir}} state=directory owner=bird mode=0700
+  file: 
+    name: "{{bird_config_dir}}"
+    state: directory
+    owner: bird
+    mode: 0700
 
 - name: Ensure bird include dirs exists
-  file: name={{bird_config_dir}}/{{item}} state=directory owner=bird mode=0700
+  file: 
+    name: "{{bird_config_dir}}/{{item}}"
+    state: directory
+    owner: bird
+    mode: 0700
   with_items:
     - bird.d
     - bird6.d
 
 - name: Configure bird
-  template: src={{ item }}.j2 dest={{bird_config_dir}}/{{ item }} owner=bird mode=0600
+  template: 
+    src: "{{ item }}.j2"
+    dest: "{{bird_config_dir}}/{{ item }}" 
+    owner: bird
+    mode: 0600
   with_items:
     - bird.conf
     - bird.d/ospf.conf
     - bird.d/filters.conf
   notify: Reload bird
 
-- template: src=bgp.conf.j2 dest={{bird_config_dir}}/bgp.conf owner=bird mode=0600
+- template: 
+    src: bgp.conf.j2
+    dest: "{{bird_config_dir}}/bgp.conf"
+    owner: bird
+    mode: 0600
   notify: 
     - Reload bird
     - Reload bird6
 
-- template: src=bird.d/upstream.conf.j2 dest={{bird_config_dir}}/bird.d/upstream.conf owner=bird mode=0600
+- template:
+    src: bird.d/upstream.conf.j2
+    dest: "{{bird_config_dir}}/bird.d/upstream.conf"
+    owner: bird
+    mode: 0600
   notify: Reload bird
   when: upstream is defined
 
-- template: src=bird.d/sites.conf.j2 dest={{bird_config_dir}}/bird.d/sites.conf owner=bird mode=0600
+- template: 
+    src: bird.d/sites.conf.j2
+    dest: "{{bird_config_dir}}/bird.d/sites.conf"
+    owner: bird
+    mode: 0600
   notify: Reload bird
   when: (openvpn is defined or wireguard is defined or gre is defined) and dsl_sites is defined
 
@@ -37,7 +62,11 @@
   notify: Reload bird
   when: ibgp_name is defined
 
-- template: src={{ item }}.j2 dest={{bird_config_dir}}/{{ item }} owner=bird mode=0600
+- template: 
+    src: "{{ item }}.j2"
+    dest: "{{bird_config_dir}}/{{ item }}"
+    owner: bird
+    mode: 0600
   with_items:
     - bird6.conf
     - bird6.d/ospf.conf
@@ -48,27 +77,50 @@
   notify: Reload bird6
   when: upstream is defined
 
-- template: src=bird6.d/sites.conf.j2 dest={{bird_config_dir}}/bird6.d/sites.conf owner=bird mode=0600
+- template: 
+    src: bird6.d/sites.conf.j2
+    dest: "{{bird_config_dir}}/bird6.d/sites.conf"
+    owner: bird
+    mode: 0600
   notify: Reload bird6
   when: (openvpn is defined or l2tp is defined) and dsl_sites is defined
 
-- template: src=bird6.d/ibgp.conf.j2 dest={{bird_config_dir}}/bird6.d/ibgp.conf owner=bird mode=0600
+- template: 
+    src: bird6.d/ibgp.conf.j2
+    dest: "{{bird_config_dir}}/bird6.d/ibgp.conf"
+    owner: bird
+    mode: 0600
   notify: Reload bird6
   when: ibgp_name is defined
 
-- template: src=bird6.d/radv.conf.j2 dest={{bird_config_dir}}/bird6.d/radv.conf owner=bird mode=0600
+- template: 
+    src: bird6.d/radv.conf.j2
+    dest: "{{bird_config_dir}}/bird6.d/radv.conf"
+    owner: bird
+    mode: 0600
   notify: Reload bird6
   when: mesh is defined
 
 - name: Start and enable bird
-  service: name={{item}} state=started enabled=yes
+  service: 
+    name: "{{item}}"
+    state: started
+    enabled: yes
   with_items:
     - bird
     - bird6
 
 - name: Ensure rsyslog config exists
-  copy: src=bird_rsyslog.conf dest=/etc/rsyslog.d/bird.conf mode=0644 owner=root
+  copy: 
+    src: bird_rsyslog.conf
+    dest: /etc/rsyslog.d/bird.conf
+    mode: 0644
+    owner: root
   notify: Restart rsyslog
 
 - name: Ensure logrotate config exists
-  copy: src=bird_logrotate dest=/etc/logrotate.d/bird mode=0644 owner=root
+  copy: 
+    src: bird_logrotate
+    dest: /etc/logrotate.d/bird
+    mode: 0644
+    owner: root

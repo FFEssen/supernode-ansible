@@ -1,4 +1,3 @@
----
 - hosts: map
   roles:
     - ffe.packages
@@ -8,5 +7,5 @@
     - ffe.iptables
     - { role: ffe.batman, when: mesh_enabled }
     - { role: ffe.fastd, when: mesh_enabled }
-    - ffe.node-exporter
+    - ffe.node_exporter
     - ffe.bird_exporter

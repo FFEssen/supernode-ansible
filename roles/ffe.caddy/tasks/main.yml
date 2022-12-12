@@ -1,8 +1,6 @@
----
-
 - name: Ensure newest caddy version is installed
   unarchive:
-    src: https://github.com/caddyserver/caddy/releases/download/v2.4.6/caddy_2.4.6_linux_amd64.tar.gz 
+    src: https://github.com/caddyserver/caddy/releases/download/v{{ caddy_version }}/caddy_{{ caddy_version }}_linux_amd64.tar.gz 
     dest: /usr/local/bin
     remote_src: yes
   tags:
