@@ -1,6 +1,8 @@
 - name: Ensure wireguard is installed
   apt:
-    name: wireguard 
+    name: 
+    - wireguard
+    - wireguard-dkms 
 
 - name: Configure wg0
   template:

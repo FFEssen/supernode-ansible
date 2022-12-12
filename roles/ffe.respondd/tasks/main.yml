@@ -1,11 +1,18 @@
-- name: Ensure mesh-accounce is up to date
+- name: Ensure mesh-announce is up to date
   git:
     repo: 'https://github.com/ffnord/mesh-announce'
     dest: /opt/mesh-announce
 
-- name: Ensure service is configured
+- name: Ensure respondd is configured
   template:
-    src: service.j2
+    src: respondd.conf.j2
+    dest: /etc/respondd.conf
+    mode: 0400
+    owner: root
+
+- name: Ensure service is configured
+  copy:
+    src: respondd.service
     dest: /etc/systemd/system/respondd.service
   register: service
 

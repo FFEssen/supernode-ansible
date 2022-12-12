@@ -1,0 +1,19 @@
+# Default settings
+[Defaults]
+# Listen port, defaults to 1001
+Port: 1001
+# Default multicast listen addresses
+MulticastLinkAddress: ff02::2:1001
+MulticastSiteAddress: ff05::2:1001
+# Default domain to use
+DefaultDomain: ffe
+# Default domain type
+DomainType: batadv
+
+[ffe]
+# Batman interface, mandatory
+BatmanInterface: bat0
+# Other listen interfaces
+Interfaces: tap0
+# IPv4 gateway option for ddhcpd
+IPv4Gateway: {{ mesh.interface.ipv4 | ipaddr('address') }}
