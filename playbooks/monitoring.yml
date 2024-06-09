@@ -1,0 +1,7 @@
+- hosts: 
+    - monitoring
+  roles:
+    - { role: prometheus }
+    - { role: alertmanager }
+    - { role: snmp-exporter }
+    - { role: node_exporter }

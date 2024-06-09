@@ -1,0 +1,18 @@
+- hosts: supernodes
+  roles:
+    - packages
+    - users
+    - ssh
+    - sysctl
+    - { role: batman, when: mesh_enabled }
+    - tunnels
+    - routing
+    - wireguard
+    - iptables
+    - { role: unbound, when: mesh_enabled }
+    - { role: ntpd, when: mesh_enabled }
+    - { role: dhcpd, when: mesh_enabled }
+    - { role: fastd, when: mesh_enabled }
+    - { role: respondd, when: mesh_enabled }
+    - node_exporter
+    - bird_exporter

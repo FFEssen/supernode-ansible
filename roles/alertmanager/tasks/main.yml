@@ -20,8 +20,7 @@
     state: started
     pull: true
     volumes:
-            - "/etc/alertmanager:/etc/alertmanager"
+      - "/etc/alertmanager:/etc/alertmanager"
     ports:
       - "172.17.0.1:9093:9093"
     restart_policy: always
-

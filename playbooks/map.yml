@@ -1,0 +1,11 @@
+- hosts: map
+  roles:
+    - packages
+    - sysctl
+    - tunnels
+    - routing
+    - iptables
+    - { role: batman, when: mesh_enabled }
+    - { role: fastd, when: mesh_enabled }
+    - node_exporter
+    - bird_exporter

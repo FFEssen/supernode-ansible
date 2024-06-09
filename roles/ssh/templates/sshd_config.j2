@@ -1,0 +1,35 @@
+Port 22
+Protocol 2
+
+# Logging
+SyslogFacility AUTH
+LogLevel VERBOSE
+
+# Authentication
+AllowGroups ssh
+LoginGraceTime 1m
+PermitRootLogin no
+StrictModes yes
+MaxAuthTries 3
+MaxSessions 2
+PubkeyAuthentication yes
+PasswordAuthentication no
+PermitEmptyPasswords no
+ChallengeResponseAuthentication no
+PubkeyAcceptedAlgorithms=+ssh-rsa
+UsePAM yes
+
+# Misc
+AllowAgentForwarding no 
+AllowTcpForwarding no
+X11Forwarding no
+PrintMotd no
+PrintLastLog yes
+TCPKeepAlive no
+Compression no 
+DebianBanner no
+
+ClientAliveInterval 300 
+ClientAliveCountMax 2
+
+Subsystem	sftp	internal-sftp

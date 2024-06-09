@@ -1,3 +1,10 @@
+- name: Ensure groups exist
+  group:
+    name: "{{ item }}"
+  with_items:
+    - sudo
+    - ssh
+
 - name: Ensure users exist
   user: 
     name: "{{ item.name }}"

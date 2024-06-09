@@ -3,4 +3,4 @@
   vars:
     site_config_dir: ~/freifunk/site-configs
   roles:
-    - { role: ffe.site-router-config }
+    - { role: site-router-config }

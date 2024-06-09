@@ -1,0 +1,15 @@
+- when: not ssh_skip | default(false)
+  block:
+    - name: Ensure ssh is configured
+      ansible.builtin.template:
+        src: sshd_config.j2
+        dest: /etc/ssh/sshd_config
+        owner: root
+        group: root
+        mode: '600'
+      notify: Restart ssh
+
+    - name: Remove legacy keys
+      ansible.builtin.file:
+        path: /etc/ssh/keys/
+        state: absent
