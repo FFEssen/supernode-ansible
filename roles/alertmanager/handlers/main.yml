@@ -1,2 +1,2 @@
 - name: Reload alertmanager
-  shell: curl http://172.17.0.1:9093/-/reload -d ""
+  ansible.builtin.command: curl http://172.17.0.1:9093/-/reload -d ""

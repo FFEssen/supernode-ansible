@@ -1,4 +1,4 @@
 - name: Restart bird_exporter
-  systemd: 
-    name: bird_exporter 
+  ansible.builtin.systemd:
+    name: bird_exporter
     state: restarted

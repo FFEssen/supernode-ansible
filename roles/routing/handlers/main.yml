@@ -1,10 +1,10 @@
 - name: Reload bird
-  shell: birdc configure soft
+  ansible.builtin.command: birdc configure soft
 
 - name: Reload bird6
-  shell: birdc6 configure soft
+  ansible.builtin.command: birdc6 configure soft
 
 - name: Restart rsyslog
-  systemd:
+  ansible.builtin.systemd:
     name: rsyslog
     state: restarted

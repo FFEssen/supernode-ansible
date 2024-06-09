@@ -1,8 +1,7 @@
----
 - name: Ensure packages are installed
-  apt: 
+  ansible.builtin.apt:
     name: "{{ item }}"
-    update_cache: yes
+    update_cache: true
   with_items:
     - tmux 
     - zsh
@@ -15,6 +14,6 @@
     - dnsutils
     - tcpdump
     - logrotate
-    - apt-transport-https 
+    - apt-transport-https
     - ca-certificates
     - conntrack

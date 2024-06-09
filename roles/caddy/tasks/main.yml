@@ -1,51 +1,52 @@
 - name: Ensure newest caddy version is installed
-  unarchive:
-    src: https://github.com/caddyserver/caddy/releases/download/v{{ caddy_version }}/caddy_{{ caddy_version }}_linux_amd64.tar.gz 
+  ansible.builtin.unarchive:
+    src: https://github.com/caddyserver/caddy/releases/download/v{{ caddy_version }}/caddy_{{ caddy_version }}_linux_amd64.tar.gz
     dest: /usr/local/bin
-    remote_src: yes
+    remote_src: true
   tags:
     - upgrade
   notify: Restart caddy
 
 - name: Ensure caddy config directory exists
-  file:
+  ansible.builtin.file:
     path: /etc/caddy
     owner: www-data
-    mode: 0755
+    mode: "0750"
     state: directory
 
 - name: Ensure caddy directories exists
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     owner: www-data
-    mode: 0755
+    mode: "0750"
     state: directory
   with_items:
-  - "/etc/caddy"
-  - "/var/www/.local/"
-  - "/var/www/.config/"
-  - "/var/log/caddy"
+    - "/etc/caddy"
+    - "/var/www/.local/"
+    - "/var/www/.config/"
+    - "/var/log/caddy"
 
 - name: Ensure config is up to date
-  template:
+  ansible.builtin.template:
     src: Caddyfile.j2
     dest: /etc/caddy/Caddyfile
     owner: root
-    mode: 0644
+    group: www-data
+    mode: "0640"
   notify: Restart caddy
 
 - name: Ensure service unit exists
-  copy:
+  ansible.builtin.copy:
     src: caddy.service
     dest: /lib/systemd/system/caddy.service
-    mode: 0644
+    mode: "0400"
     owner: root
   register: systemd
 
 - name: Ensure service is enabled and started
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
     name: caddy
     state: started
-    enabled: yes
+    enabled: true
   when: systemd.changed

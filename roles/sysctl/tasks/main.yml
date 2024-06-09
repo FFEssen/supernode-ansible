@@ -1,7 +1,7 @@
 - name: Configure sysctl
-  copy: 
+  ansible.builtin.copy:
     src: sysctl.conf
-    dest: /etc/sysctl.conf
+    dest: /etc/sysctl.d/ff-e.conf
     owner: root
-    mode: 0644
+    mode: "0440"
   notify: Reload sysctl

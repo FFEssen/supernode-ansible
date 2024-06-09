@@ -1,5 +1,5 @@
 - name: Reload iptables
-  shell: iptables-restore /etc/iptables/rules.v4
+  ansible.builtin.command: iptables-restore /etc/iptables/rules.v4
 
 - name: Reload ip6tables
-  shell: ip6tables-restore /etc/iptables/rules.v6
+  ansible.builtin.command: ip6tables-restore /etc/iptables/rules.v6

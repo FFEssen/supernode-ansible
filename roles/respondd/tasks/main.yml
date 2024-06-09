@@ -1,28 +1,29 @@
 - name: Ensure mesh-announce is up to date
-  git:
+  ansible.builtin.git:
     repo: 'https://github.com/ffnord/mesh-announce'
     dest: /opt/mesh-announce
 
 - name: Ensure respondd is configured
-  template:
+  ansible.builtin.template:
     src: respondd.conf.j2
     dest: /etc/respondd.conf
-    mode: 0400
+    mode: "0400"
     owner: root
 
 - name: Ensure service is configured
-  copy:
+  ansible.builtin.copy:
     src: respondd.service
     dest: /etc/systemd/system/respondd.service
+    mode: "0400"
   register: service
 
 - name: Reload systemd
-  systemd: 
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
   when: service.changed
 
 - name: Ensure service is enabled and started
-  systemd: 
+  ansible.builtin.systemd:
     name: respondd
-    enabled: yes
+    enabled: true
     state: started

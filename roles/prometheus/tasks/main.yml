@@ -1,32 +1,30 @@
----
-
 - name: Ensure config dir exists
-  file: 
+  ansible.builtin.file:
     name: /etc/prometheus
     state: directory
     owner: root
-    mode: 0755
+    mode: "0755"
 
 - name: Ensure data dir exists
-  file: 
+  ansible.builtin.file:
     name: /var/prometheus
     state: directory
     owner: nobody
-    mode: 0755
+    mode: "0755"
 
 - name: Ensure target group dir exists
-  file: 
+  ansible.builtin.file:
     name: /etc/prometheus/tgroups
     state: directory
     owner: nobody
-    mode: 0755
+    mode: "0755"
 
 - name: Configure prometheus
-  copy: 
+  ansible.builtin.copy:
     src: "{{ item }}"
     dest: /etc/prometheus
     owner: root
-    mode: 0644
+    mode: "0644"
   with_items:
     - prometheus.yml
     - alerts.rules.yml
@@ -34,11 +32,11 @@
   notify: Restart prometheus
 
 - name: Configure prometheus
-  template: 
+  ansible.builtin.template:
     src: "{{ item }}.j2"
     dest: "/etc/prometheus/tgroups/{{ item }}.yml"
     owner: root
-    mode: 0644
+    mode: "0644"
   with_items:
     - snmp_city
     - snmp_dsl_sites
@@ -48,7 +46,7 @@
     - bird_supernodes
 
 - name: Ensure docker container is running
-  docker_container:
+  community.general.docker_container:
     name: prometheus
     image: prom/prometheus
     state: started

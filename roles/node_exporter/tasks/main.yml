@@ -1,23 +1,24 @@
 - name: Ensure node_exporter is installed
-  unarchive:
+  ansible.builtin.unarchive:
     src: https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz
     dest: /usr/local/bin/
-    remote_src: yes
+    remote_src: true
   notify: Restart bird_exporter
 
 - name: Ensure systemd is configured
-  copy: 
+  ansible.builtin.copy:
     src: systemd.service
     dest: /etc/systemd/system/node_exporter.service
+    mode: "0400"
   register: systemd_unit
 
 - name: Reload systemd
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
   when: systemd_unit.changed
 
 - name: Start node-exporter
-  systemd:
+  ansible.builtin.systemd:
     name: node_exporter
     state: started
-    enabled: yes
+    enabled: true

@@ -1,22 +1,22 @@
 - name: Ensure groups exist
-  group:
+  ansible.builtin.group:
     name: "{{ item }}"
   with_items:
     - sudo
     - ssh
 
 - name: Ensure users exist
-  user: 
+  ansible.builtin.user:
     name: "{{ item.name }}"
     groups: "{{ item.groups }}"
     shell: "{{ item.shell }}"
-    password: "{{ item.initial_pass }}" 
-    update_password: on_create 
+    password: "{{ item.initial_pass }}"
+    update_password: on_create
     state: present
   with_items: '{{ users }}'
 
 - name: Ensure keys are present
-  authorized_key: 
+  ansible.builtin.authorized_key:
     user: "{{ item.name }}"
     key: "https://github.com/{{ item.github_account }}.keys"
   with_items: '{{ users }}'

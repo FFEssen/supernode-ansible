@@ -1,126 +1,134 @@
 - name: Ensure bird is installed
-  apt: 
-    name: bird 
+  ansible.builtin.apt:
+    name: bird
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Ensure bird config dir exists
-  file: 
-    name: "{{bird_config_dir}}"
+  ansible.builtin.file:
+    name: "{{ bird_config_dir }}"
     state: directory
     owner: bird
-    mode: 0700
+    mode: "0700"
 
 - name: Ensure bird include dirs exists
-  file: 
-    name: "{{bird_config_dir}}/{{item}}"
+  ansible.builtin.file:
+    name: "{{ bird_config_dir }}/{{ item }}"
     state: directory
     owner: bird
-    mode: 0700
+    mode: "0700"
   with_items:
     - bird.d
     - bird6.d
 
 - name: Configure bird
-  template: 
+  ansible.builtin.template:
     src: "{{ item }}.j2"
-    dest: "{{bird_config_dir}}/{{ item }}" 
+    dest: "{{ bird_config_dir }}/{{ item }}"
     owner: bird
-    mode: 0600
+    mode: "0600"
   with_items:
     - bird.conf
     - bird.d/ospf.conf
     - bird.d/filters.conf
   notify: Reload bird
 
-- template: 
+- ansible.builtin.template:
     src: bgp.conf.j2
-    dest: "{{bird_config_dir}}/bgp.conf"
+    dest: "{{ bird_config_dir }}/bgp.conf"
     owner: bird
-    mode: 0600
-  notify: 
+    mode: "0600"
+  notify:
     - Reload bird
     - Reload bird6
 
-- template:
+- ansible.builtin.template:
     src: bird.d/upstream.conf.j2
-    dest: "{{bird_config_dir}}/bird.d/upstream.conf"
+    dest: "{{ bird_config_dir }}/bird.d/upstream.conf"
     owner: bird
-    mode: 0600
+    mode: "0600"
   notify: Reload bird
   when: upstream is defined
 
-- template: 
+- ansible.builtin.template:
     src: bird.d/sites.conf.j2
-    dest: "{{bird_config_dir}}/bird.d/sites.conf"
+    dest: "{{ bird_config_dir }}/bird.d/sites.conf"
     owner: bird
-    mode: 0600
+    mode: "0600"
   notify: Reload bird
   when: (openvpn is defined or wireguard is defined or gre is defined) and dsl_sites is defined
 
-- template: src=bird.d/ibgp.conf.j2 dest={{bird_config_dir}}/bird.d/ibgp.conf owner=bird mode=0600
+- template:
+    src: bird.d/ibgp.conf.j2
+    dest: "{{ bird_config_dir }}/bird.d/ibgp.conf"
+    owner: bird
+    mode: "0600"
   notify: Reload bird
   when: ibgp_name is defined
 
-- template: 
+- ansible.builtin.template:
     src: "{{ item }}.j2"
-    dest: "{{bird_config_dir}}/{{ item }}"
+    dest: "{{ bird_config_dir }}/{{ item }}"
     owner: bird
-    mode: 0600
+    mode: "0600"
   with_items:
     - bird6.conf
     - bird6.d/ospf.conf
     - bird6.d/filters.conf
   notify: Reload bird6
 
-- template: src=bird6.d/upstream.conf.j2 dest={{bird_config_dir}}/bird6.d/upstream.conf owner=bird mode=0600
+- template:
+    src: bird6.d/upstream.conf.j2
+    dest: "{{ bird_config_dir }}/bird6.d/upstream.conf"
+    owner: bird
+    mode: "0600"
   notify: Reload bird6
   when: upstream is defined
 
-- template: 
+- ansible.builtin.template:
     src: bird6.d/sites.conf.j2
-    dest: "{{bird_config_dir}}/bird6.d/sites.conf"
+    dest: "{{ bird_config_dir }}/bird6.d/sites.conf"
     owner: bird
-    mode: 0600
+    mode: "0600"
   notify: Reload bird6
   when: (openvpn is defined or l2tp is defined) and dsl_sites is defined
 
-- template: 
+- ansible.builtin.template:
     src: bird6.d/ibgp.conf.j2
-    dest: "{{bird_config_dir}}/bird6.d/ibgp.conf"
+    dest: "{{ bird_config_dir }}/bird6.d/ibgp.conf"
     owner: bird
-    mode: 0600
+    mode: "0600"
   notify: Reload bird6
   when: ibgp_name is defined
 
-- template: 
+- ansible.builtin.template:
     src: bird6.d/radv.conf.j2
-    dest: "{{bird_config_dir}}/bird6.d/radv.conf"
+    dest: "{{ bird_config_dir }}/bird6.d/radv.conf"
     owner: bird
-    mode: 0600
+    mode: "0600"
   notify: Reload bird6
   when: mesh is defined
 
 - name: Start and enable bird
-  service: 
-    name: "{{item}}"
+  ansible.builtin.systemd:
+    name: "{{ item }}"
     state: started
-    enabled: yes
+    enabled: true
   with_items:
     - bird
     - bird6
 
 - name: Ensure rsyslog config exists
-  copy: 
+  ansible.builtin.copy:
     src: bird_rsyslog.conf
     dest: /etc/rsyslog.d/bird.conf
-    mode: 0644
+    mode: "0644"
     owner: root
   notify: Restart rsyslog
 
 - name: Ensure logrotate config exists
-  copy: 
+  ansible.builtin.copy:
     src: bird_logrotate
     dest: /etc/logrotate.d/bird
-    mode: 0644
+    mode: "0644"
     owner: root

@@ -1,13 +1,11 @@
----
-
-- name: Ensure output directory for site {{ site.name }} exists
-  file: 
+- name: "Ensure output directory for site exists: {{ site.name }}"
+  ansible.builtin.file:
     path: "{{ site_config_dir }}/{{ site.name }}"
     state: directory
-    mode: 0755
+    mode: "0755"
 
-- name: Ensure boot.config of site {{ site.name }} is up to date
-  template: 
+- name: "Ensure boot.config for site is up to date: {{ site.name }}"
+  ansible.builtin.template:
     src: config.boot.dsl.j2
     dest: "{{ site_config_dir }}/{{ site.name }}/config.boot"
-    mode: 0644
+    mode: "0644"

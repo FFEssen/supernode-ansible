@@ -1,25 +1,25 @@
 - name: Ensure iptables-persistent is installed
-  apt: 
+  ansible.builtin.apt:
     name: iptables-persistent
     state: present
 
-- name: Configure iptables 
-  template: 
+- name: Configure iptables
+  ansible.builtin.template:
     src: iptables.rules.j2
     dest: /etc/iptables/rules.v4
     owner: root
-    mode: 0600
+    mode: "0600"
   notify: Reload iptables
 
 - name: Configure ip6tables
-  template: 
+  ansible.builtin.template:
     src: ip6tables.rules.j2
     dest: /etc/iptables/rules.v6
     owner: root
-    mode: 0600
+    mode: "0600"
   notify: Reload ip6tables
 
 - name: Ensure service is enabled
-  systemd: 
+  ansible.builtin.systemd:
     name: netfilter-persistent
-    enabled: yes
+    enabled: true

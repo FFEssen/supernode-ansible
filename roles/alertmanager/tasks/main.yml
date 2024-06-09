@@ -1,20 +1,20 @@
 - name: Ensure config dir exists
-  file: 
-    name: /etc/alertmanager 
-    state: directory 
-    owner: root 
-    mode: 0755
+  ansible.builtin.file:
+    name: /etc/alertmanager
+    state: directory
+    owner: root
+    mode: "0755"
 
 - name: Ensure config is up to date
-  template: 
+  ansible.builtin.template:
     src: alertmanager.yml.j2
     dest: /etc/alertmanager/alertmanager.yml
     owner: root
-    mode: 0644
+    mode: "0644"
   notify: Reload alertmanager
 
 - name: Ensure docker container is running
-  docker_container:
+  community.general.docker_container:
     name: alertmanager
     image: prom/alertmanager
     state: started

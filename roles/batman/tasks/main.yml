@@ -1,17 +1,17 @@
 - name: Ensure batctl is installed
-  apt:
+  ansible.builtin.apt:
     name: batctl
     state: present
-    update_cache: yes 
+    update_cache: true
 
 - name: Configure mesh interface
-  template: 
+  ansible.builtin.template:
     dest: /etc/network/interfaces.d/batman.cfg
     src: batman.j2
     owner: root
-    mode: 0644
+    mode: "0400"
 
 - name: Enabling interfaces
-  command: /sbin/ifup {{mesh.interface.name}}
+  ansible.builtin.command: "/sbin/ifup {{ mesh.interface.name }}"
   register: ifup_result
   changed_when: "'already configured' in ifup_result.stdout"

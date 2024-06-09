@@ -1,2 +1,2 @@
 - name: Reload sysctl
-  shell: sysctl --system
+  ansible.builtin.command: sysctl --system

@@ -1,0 +1,4 @@
+root = true
+
+[**/{tasks,handlers,playbooks}/**.yml]
+file_type = yaml.ansible

@@ -1,5 +1,4 @@
 - name: Restart ntpd
-  systemd: 
+  ansible.builtin.systemd:
     name: ntp
     state: restarted
-

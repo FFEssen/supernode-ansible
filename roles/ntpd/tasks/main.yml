@@ -1,13 +1,13 @@
 - name: Ensure ntpd is installed
-  apt: 
+  ansible.builtin.apt:
     name: ntp
     state: present
     update_cache: yes
 
 - name: Configure ntpd
-  copy: 
+  ansible.builtin.copy:
     src: ntp.conf
-    dest: "{{ntpd_config_dir}}/ntp.conf"
+    dest: "{{ ntpd_config_dir }}/ntp.conf"
     owner: root
-    mode: 0444
+    mode: "0444"
   notify: Restart ntpd

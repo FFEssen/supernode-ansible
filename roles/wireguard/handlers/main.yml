@@ -1,2 +1,2 @@
 - name: Reload wg0
-  shell: wg-quick strip wg0
+  ansible.builtin.command: wg-quick strip wg0

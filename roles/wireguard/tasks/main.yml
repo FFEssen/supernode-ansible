@@ -1,24 +1,22 @@
 - name: Ensure wireguard is installed
-  apt:
-    name: 
-    - wireguard
-    - wireguard-dkms 
+  ansible.builtin.apt:
+    name: wireguard-tools
 
 - name: Configure wg0
-  template:
+  ansible.builtin.template:
     src: wg0.conf.j2
     dest: /etc/wireguard/wg0.conf
-    mode: 0644
+    mode: "0640"
     owner: root
   notify:
-  - Reload wg0
+    - Reload wg0
 
 - name: Ensure service is enabled
-  systemd:
+  ansible.builtin.systemd:
     name: wg-quick@wg0
-    enabled: yes
+    enabled: true
 
 - name: Ensure service is running
-  systemd:
+  ansible.builtin.systemd:
     name: wg-quick@wg0
     state: started

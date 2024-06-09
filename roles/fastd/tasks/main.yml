@@ -1,76 +1,76 @@
 - name: Ensure fastd is installed
-  apt: 
+  ansible.builtin.apt:
     name: fastd
     state: present
 
 - name: Ensure user exists
-  user: 
+  ansible.builtin.user:
     name: fastd
-    system: yes
+    system: true
 
 - name: Ensure fastd config dir exists
-  file: 
-    name: "{{fastd_config_dir}}"
+  ansible.builtin.file:
+    name: "{{ fastd_config_dir }}"
     state: directory
     owner: fastd
-    mode: 0500
+    mode: "0500"
 
 - name: Ensure fastd config subdirs exists
-  file: 
-    name: "{{fastd_config_dir}}/{{item}}"
+  ansible.builtin.file:
+    name: "{{ fastd_config_dir }}/{{ item }}"
     state: directory
     owner: fastd
-    mode: 0500
+    mode: "0500"
   with_items:
     - essen
 
 - name: Create config files
-  template: 
-    src: "fastd_{{item}}.conf.j2"
-    dest: "{{fastd_config_dir}}/{{item}}/fastd.conf"
+  ansible.builtin.template:
+    src: "fastd_{{ item }}.conf.j2"
+    dest: "{{ fastd_config_dir }}/{{ item }}/fastd.conf"
     owner: fastd
-    mode: 0400
+    mode: "0400"
   with_items:
     - essen
 
 - name: Ensure dummy dir exists
-  file: 
-    name: "{{fastd_config_dir}}/essen/dummy" 
+  ansible.builtin.file:
+    name: "{{ fastd_config_dir }}/essen/dummy"
     state: directory
     owner: fastd
-    mode: 0500
+    mode: "0500"
 
 - name: Copy blacklist.sh
-  copy: 
+  ansible.builtin.copy:
     src: blacklist.sh
-    dest: "{{fastd_config_dir}}/essen/blacklist.sh"
+    dest: "{{ fastd_config_dir }}/essen/blacklist.sh"
     owner: fastd
-    mode: 0500
+    mode: "0500"
 
 - name: Copy blacklist
-  copy: 
+  ansible.builtin.copy:
     src: fastd-blacklist.json
-    dest: "{{fastd_config_dir}}/fastd-blacklist.json"
+    dest: "{{ fastd_config_dir }}/fastd-blacklist.json"
     owner: fastd
-    mode: 0400
+    mode: "0400"
 
 - name: Configure rsyslog
-  copy: 
+  ansible.builtin.copy:
     src: fastd.rsyslog.conf
     dest: /etc/rsyslog.d/fastd.conf
     owner: root
-    mode: 0644
+    mode: "0644"
   notify: Restart rsyslog
-  
+
 - name: Ensure logrotate is configured
-  copy: 
+  ansible.builtin.copy:
     src: fastd_logrotate
     dest: /etc/logrotate.d/fastd
-    mode: 0644
+    mode: "0644"
     owner: root
 
 - name: Ensure service is enabled
-  systemd: 
+  ansible.builtin.systemd:
     name: fastd@essen
-    enabled: yes
+    enabled: true
     state: started

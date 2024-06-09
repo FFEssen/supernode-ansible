@@ -1,14 +1,13 @@
----
 - block:
   - name: Configure tunnels
-    template: 
+    ansible.builtin.template: 
       dest: /etc/network/interfaces.d/tunnels.cfg
       src: tunnels.j2
       owner: root
       mode: 0644
 
   - name: Enabling interfaces
-    command: /sbin/ifup {{ item.name }}
+    ansible.builtin.command: /sbin/ifup {{ item.name }}
     with_items: '{{tunnels}}'
     register: ifup_result
     changed_when: "'already configured' in ifup_result.stdout"

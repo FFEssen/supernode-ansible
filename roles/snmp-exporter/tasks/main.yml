@@ -1,16 +1,16 @@
 - name: Ensure dependencies are installed
-  apt: 
+  ansible.builtin.apt:
     name: prometheus-snmp-exporter
 
 - name: Configure snmp_exporter
-  copy: 
-    src: snmp.yml 
-    dest: /etc/prometheus/snmp.yml 
-    owner: root 
-    mode: 0644
+  ansible.builtin.copy:
+    src: snmp.yml
+    dest: /etc/prometheus/snmp.yml
+    owner: root
+    mode: "0644"
 
 - name: Start service
-  service: 
-    name: prometheus-snmp-exporter 
+  ansible.builtin.service:
+    name: prometheus-snmp-exporter
     state: restarted
-    enabled: yes
+    enabled: true
