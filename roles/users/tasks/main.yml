@@ -16,7 +16,7 @@
   with_items: '{{ users }}'
 
 - name: Ensure keys are present
-  ansible.builtin.authorized_key:
+  ansible.posix.authorized_key:
     user: "{{ item.name }}"
     key: "https://github.com/{{ item.github_account }}.keys"
   with_items: '{{ users }}'
