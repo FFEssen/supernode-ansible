@@ -7,8 +7,8 @@
         owner: root
         mode: "0644"
 
-    - name: Enabling interfaces
-      ansible.builtin.command: /sbin/ifup {{ item.name }}
-      with_items: '{{ tunnels }}'
-      register: ifup_result
-      changed_when: "'already configured' in ifup_result.stdout"
+    # - name: Enabling interfaces
+    #   ansible.builtin.command: /sbin/ifup {{ item.name }}
+    #   with_items: '{{ tunnels }}'
+    #   register: ifup_result
+    #   changed_when: "'already configured' in ifup_result.stdout"

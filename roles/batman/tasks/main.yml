@@ -11,7 +11,7 @@
     owner: root
     mode: "0400"
 
-- name: Enabling interfaces
-  ansible.builtin.command: "/sbin/ifup {{ mesh.interface.name }}"
-  register: ifup_result
-  changed_when: "'already configured' in ifup_result.stdout"
+# - name: Enabling interfaces
+#   ansible.builtin.command: "/sbin/ifup {{ mesh.interface.name }}"
+#   register: ifup_result
+#   changed_when: "'already configured' in ifup_result.stdout"
