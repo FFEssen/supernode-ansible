@@ -1,0 +1,17 @@
+skip_list:
+  - yaml[line-length]
+  - yaml[empty-lines]
+  - name[missing]
+  - name[play]
+  - name[template]
+  - var-naming[no-role-prefix]
+  - no-changed-when
+  - latest[git]
+  - no-handler
+
+warn_list:
+  - yaml[indentation]
+  - risky-file-permissions
+  - ignore-errors
+
+offline: true
