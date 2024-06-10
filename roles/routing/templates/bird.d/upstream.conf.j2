@@ -16,13 +16,6 @@ filter ffe_out {
   reject;
 }
 
-filter ffrl_out {
-  if DRAINED = 1 then reject;
-  if net = {{ nat_ip.ffrl }}/32 then accept;
-
-  reject;
-}
-
 {% endif %}
 template bgp upstream from generic_bgp {
   local as {{ own_as }};

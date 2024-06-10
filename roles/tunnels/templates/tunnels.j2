@@ -8,7 +8,7 @@ iface {{tunnel.name}} inet static
     mtu 1400
 {% if tunnel.protocol == 'gre' %}
     pre-up modprobe ip_gre
-    pre-up ip tunnel add {{tunnel.name}} mode gre local {{host_ip}} remote {{tunnel.ipv4.remote}} ttl 64 dev eth0
+    pre-up ip tunnel add {{tunnel.name}} mode gre local {{host_ip}} remote {{tunnel.ipv4.remote}} ttl 64 dev ens18
 {% endif %}
 {% if tunnel.protocol == 'l2tp' %}
     pre-up modprobe l2tp_eth

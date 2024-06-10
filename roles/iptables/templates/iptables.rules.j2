@@ -59,25 +59,22 @@
 
 {% if mesh is defined %}
 # prevent client traffic forwarding for spoofed IP addresses 
--A FORWARD -i bat+ -o t-+ ! -s 10.228.0.0/16 -j DROP_FORWARD
+-A FORWARD -i bat+ -o bb-+ ! -s 10.228.0.0/16 -j DROP_FORWARD
 {% endif %}
 
 # prevent client traffic forwarding for rfc1918
--A FORWARD -o t-+ -d 192.168.0.0/16 -j DROP_FORWARD
--A FORWARD -o t-+ -d 172.16.0.0/12 -j DROP_FORWARD
--A FORWARD -o t-+ -d 10.0.0.0/8 -j DROP_FORWARD
+-A FORWARD -o bb-+ -d 192.168.0.0/16 -j DROP_FORWARD
+-A FORWARD -o bb-+ -d 172.16.0.0/12 -j DROP_FORWARD
+-A FORWARD -o bb-+ -d 10.0.0.0/8 -j DROP_FORWARD
 
 # prevent client traffic forwarding for rfc6598
--A FORWARD -o t-+ -d 100.64.0.0/10 -j DROP_FORWARD
+-A FORWARD -o bb-+ -d 100.64.0.0/10 -j DROP_FORWARD
 
 # allow only nat ip and transfer net to enter tunnel
--A OUTPUT -o t-+ -s 100.64.0.0/10 -d 100.64.0.0/10 -j ACCEPT
 -A OUTPUT -o bb-+ -s 100.82.0.0/16 -d 100.82.0.0/16 -j ACCEPT
 {% if nat_ip is defined %}
--A OUTPUT -o t-+ -s {{nat_ip.ffrl}} -j ACCEPT
 -A OUTPUT -o bb-+ -s {{nat_ip.ffe}} -j ACCEPT
 {% endif %}
--A OUTPUT -o t-+ -j DROP_OUTPUT
 -A OUTPUT -o bb-+ -j DROP_OUTPUT
 
 COMMIT
@@ -89,7 +86,6 @@ COMMIT
 :POSTROUTING ACCEPT [138887:10983100]
 {% if nat_ip is defined %}
 -A POSTROUTING -s 100.64.0.0/10 -j RETURN
--A POSTROUTING -o t-+ -j SNAT --to-source {{nat_ip.ffrl}}
 -A POSTROUTING -o bb-+ -j SNAT --to-source {{nat_ip.ffe}}
 {% endif %}
 
@@ -101,7 +97,6 @@ COMMIT
 :FORWARD ACCEPT [3:262]
 :OUTPUT ACCEPT [1104633:171538737]
 :POSTROUTING ACCEPT [1104635:171538947]
--A POSTROUTING -o t-+ -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1360
 -A POSTROUTING -o bb-+ -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1360
 
 COMMIT

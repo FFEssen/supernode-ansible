@@ -17,7 +17,6 @@ iface {{mesh.interface.name}} inet static
     pre-up batctl it 5000
     pre-up batctl bl 0
     pre-up batctl gw server 100mbit/100mbit
-    pre-up echo 120 > /sys/class/net/$IFACE/mesh/hop_penalty
     post-down ip rule del from {{ mesh.interface.ipv4 | ipaddr('0') }} table 42
     post-down ip rule del to {{ mesh.interface.ipv4 | ipaddr('0') }} table 42
 
