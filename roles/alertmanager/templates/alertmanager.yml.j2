@@ -13,12 +13,10 @@ route:
 
 receivers:
 - name: 'page-noc'
-  pushover_configs:
-{% for config in alertmanager.pushover_configs | default([]) %}
-    - user_key: {{ config.user_key }}
-      token: {{ config.token }}
-      expire: 24h
-      retry: 1h
+  webhook_configs:
+{% for config in alertmanager.webhook_configs | default([]) %}
+    - url: {{ config.url }}
+      send_resolved: true
 {% endfor %}
 
 - name: 'notify-noc'
