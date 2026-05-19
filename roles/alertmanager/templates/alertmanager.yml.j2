@@ -11,10 +11,10 @@ route:
 
 receivers:
 - name: 'page-noc'
-  webhook_configs:
-{% for config in alertmanager.webhook_configs | default([]) %}
-    - url: {{ config.url }}
-      send_resolved: true
+  pagerduty_configs:
+{% for config in alertmanager.pagerduty_configs | default([]) %}
+  - routing_key: {{ config.integration_key }}
+    send_resolved: true
 {% endfor %}
 
 - name: 'notify-noc'
